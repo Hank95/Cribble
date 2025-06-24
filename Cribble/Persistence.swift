@@ -14,15 +14,33 @@ struct PersistenceController {
     static let preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-        }
+        
+        let sampleGame = Game(context: viewContext)
+        sampleGame.id = UUID()
+        sampleGame.date = Date()
+        sampleGame.winner = "Player 1"
+        sampleGame.loser = "Player 2"
+        sampleGame.winnerScore = 121
+        sampleGame.loserScore = 95
+        sampleGame.duration = 1800.0
+        
+        let stats1 = PlayerStats(context: viewContext)
+        stats1.name = "Player 1"
+        stats1.gamesPlayed = 1
+        stats1.gamesWon = 1
+        stats1.gamesLost = 0
+        stats1.averageScore = 121.0
+        
+        let stats2 = PlayerStats(context: viewContext)
+        stats2.name = "Player 2"
+        stats2.gamesPlayed = 1
+        stats2.gamesWon = 0
+        stats2.gamesLost = 1
+        stats2.averageScore = 95.0
+        
         do {
             try viewContext.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
@@ -53,5 +71,65 @@ struct PersistenceController {
             }
         })
         container.viewContext.automaticallyMergesChangesFromParent = true
+    }
+    
+    func saveGame(winner: String, loser: String, winnerScore: Int16, loserScore: Int16, duration: Double? = nil) {
+        let context = container.viewContext
+        
+        let game = Game(context: context)
+        game.id = UUID()
+        game.date = Date()
+        game.winner = winner
+        game.loser = loser
+        game.winnerScore = winnerScore
+        game.loserScore = loserScore
+        game.duration = duration ?? 0.0
+        
+        updatePlayerStats(playerName: winner, won: true, score: winnerScore, context: context)
+        updatePlayerStats(playerName: loser, won: false, score: loserScore, context: context)
+        
+        do {
+            try context.save()
+        } catch {
+            let nsError = error as NSError
+            print("Failed to save game: \(nsError), \(nsError.userInfo)")
+        }
+    }
+    
+    private func updatePlayerStats(playerName: String, won: Bool, score: Int16, context: NSManagedObjectContext) {
+        let request: NSFetchRequest<PlayerStats> = PlayerStats.fetchRequest()
+        request.predicate = NSPredicate(format: "name == %@", playerName)
+        
+        do {
+            let results = try context.fetch(request)
+            let playerStats: PlayerStats
+            
+            if let existingStats = results.first {
+                playerStats = existingStats
+            } else {
+                playerStats = PlayerStats(context: context)
+                playerStats.name = playerName
+                playerStats.gamesPlayed = 0
+                playerStats.gamesWon = 0
+                playerStats.gamesLost = 0
+                playerStats.averageScore = 0.0
+            }
+            
+            let previousTotalScore = playerStats.averageScore * Double(playerStats.gamesPlayed)
+            playerStats.gamesPlayed += 1
+            
+            if won {
+                playerStats.gamesWon += 1
+            } else {
+                playerStats.gamesLost += 1
+            }
+            
+            let newTotalScore = previousTotalScore + Double(score)
+            playerStats.averageScore = newTotalScore / Double(playerStats.gamesPlayed)
+            
+        } catch {
+            let nsError = error as NSError
+            print("Failed to update player stats: \(nsError), \(nsError.userInfo)")
+        }
     }
 }

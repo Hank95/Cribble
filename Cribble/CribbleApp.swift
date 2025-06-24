@@ -10,11 +10,13 @@ import SwiftUI
 @main
 struct CribbleApp: App {
     let persistenceController = PersistenceController.shared
+    @StateObject private var gameViewModel = GameViewModel()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environmentObject(gameViewModel)
         }
     }
 }
