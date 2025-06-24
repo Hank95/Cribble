@@ -4,6 +4,8 @@ import CoreData
 class GameViewModel: ObservableObject {
     @Published var player1Name: String = "Player 1"
     @Published var player2Name: String = "Player 2"
+    @Published var player1Color: Color = .blue
+    @Published var player2Color: Color = .orange
     @Published var player1Score: Int = 0
     @Published var player2Score: Int = 0
     @Published var player1SelectedScore: Int = 0
@@ -15,6 +17,10 @@ class GameViewModel: ObservableObject {
     private let persistenceController = PersistenceController.shared
     private let winningScore = 121
     
+    var isGameInProgress: Bool {
+        return !gameWon && (player1Score > 0 || player2Score > 0) && gameStartTime != nil
+    }
+    
     func startNewGame() {
         player1Score = 0
         player2Score = 0
@@ -23,6 +29,14 @@ class GameViewModel: ObservableObject {
         gameStartTime = Date()
         gameWon = false
         winner = ""
+    }
+    
+    func startNewGame(player1Name: String, player2Name: String, player1Color: Color, player2Color: Color) {
+        self.player1Name = player1Name
+        self.player2Name = player2Name
+        self.player1Color = player1Color
+        self.player2Color = player2Color
+        startNewGame()
     }
     
     func applyScoreForPlayer1() {

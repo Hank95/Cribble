@@ -3,6 +3,8 @@ import SwiftUI
 struct MainGameView: View {
     @EnvironmentObject var gameViewModel: GameViewModel
     @State private var showingWinAlert = false
+    @State private var showingNewGameConfirmation = false
+    @State private var showingNewGameSetup = false
     @State private var isLandscape = false
     
     var body: some View {
@@ -44,7 +46,7 @@ struct MainGameView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("New Game") {
-                        gameViewModel.startNewGame()
+                        handleNewGameTapped()
                     }
                 }
             }
@@ -61,11 +63,22 @@ struct MainGameView: View {
         }
         .alert("Game Over!", isPresented: $showingWinAlert) {
             Button("New Game") {
-                gameViewModel.startNewGame()
+                showingNewGameSetup = true
             }
             Button("OK") { }
         } message: {
             Text("\(gameViewModel.winner) wins with \(gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player1Score : gameViewModel.player2Score) points!")
+        }
+        .alert("Start New Game?", isPresented: $showingNewGameConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Start New Game") {
+                showingNewGameSetup = true
+            }
+        } message: {
+            Text("Are you sure you want to start a new game? The current game will be lost.")
+        }
+        .sheet(isPresented: $showingNewGameSetup) {
+            NewGameSetupView(gameViewModel: gameViewModel)
         }
     }
     
@@ -76,7 +89,7 @@ struct MainGameView: View {
                 VStack(spacing: 20) {
                     Text(gameViewModel.player2Name)
                         .font(.headline)
-                        .foregroundColor(.orange)
+                        .foregroundColor(gameViewModel.player2Color)
                         .padding(.bottom, 5)
                     
                     ScoreDialView(selectedScore: $gameViewModel.player2SelectedScore)
@@ -89,7 +102,7 @@ struct MainGameView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(buttonColor(for: gameViewModel.player2SelectedScore, playerColor: .orange))
+                    .background(buttonColor(for: gameViewModel.player2SelectedScore, playerColor: gameViewModel.player2Color))
                     .cornerRadius(10)
                     .disabled(gameViewModel.player2SelectedScore == 0)
                 }
@@ -109,7 +122,7 @@ struct MainGameView: View {
                 VStack(spacing: 20) {
                     Text(gameViewModel.player1Name)
                         .font(.headline)
-                        .foregroundColor(.blue)
+                        .foregroundColor(gameViewModel.player1Color)
                         .padding(.bottom, 5)
                     
                     ScoreDialView(selectedScore: $gameViewModel.player1SelectedScore)
@@ -122,7 +135,7 @@ struct MainGameView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(buttonColor(for: gameViewModel.player1SelectedScore, playerColor: .blue))
+                    .background(buttonColor(for: gameViewModel.player1SelectedScore, playerColor: gameViewModel.player1Color))
                     .cornerRadius(10)
                     .disabled(gameViewModel.player1SelectedScore == 0)
                 }
@@ -146,7 +159,7 @@ struct MainGameView: View {
                 VStack(spacing: 20) {
                     Text(gameViewModel.player1Name)
                         .font(.headline)
-                        .foregroundColor(.blue)
+                        .foregroundColor(gameViewModel.player1Color)
                         .padding(.bottom, 5)
                     
                     ScoreDialView(selectedScore: $gameViewModel.player1SelectedScore)
@@ -159,7 +172,7 @@ struct MainGameView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(buttonColor(for: gameViewModel.player1SelectedScore, playerColor: .blue))
+                    .background(buttonColor(for: gameViewModel.player1SelectedScore, playerColor: gameViewModel.player1Color))
                     .cornerRadius(8)
                     .disabled(gameViewModel.player1SelectedScore == 0)
                 }
@@ -179,7 +192,7 @@ struct MainGameView: View {
                 VStack(spacing: 20) {
                     Text(gameViewModel.player2Name)
                         .font(.headline)
-                        .foregroundColor(.orange)
+                        .foregroundColor(gameViewModel.player2Color)
                         .padding(.bottom, 5)
                     
                     ScoreDialView(selectedScore: $gameViewModel.player2SelectedScore)
@@ -192,7 +205,7 @@ struct MainGameView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(buttonColor(for: gameViewModel.player2SelectedScore, playerColor: .orange))
+                    .background(buttonColor(for: gameViewModel.player2SelectedScore, playerColor: gameViewModel.player2Color))
                     .cornerRadius(8)
                     .disabled(gameViewModel.player2SelectedScore == 0)
                 }
@@ -214,34 +227,34 @@ struct MainGameView: View {
                 Text(gameViewModel.player1Name)
                     .font(.title2)
                     .fontWeight(.semibold)
-                    .foregroundColor(.blue)
+                    .foregroundColor(gameViewModel.player1Color)
                 
                 Text("\(gameViewModel.player1Score)")
                     .font(.system(size: 48, weight: .bold))
-                    .foregroundColor(.blue)
+                    .foregroundColor(gameViewModel.player1Color)
             }
             .frame(maxWidth: .infinity)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.blue.opacity(0.1))
+                    .fill(gameViewModel.player1Color.opacity(0.1))
             )
             
             VStack {
                 Text(gameViewModel.player2Name)
                     .font(.title2)
                     .fontWeight(.semibold)
-                    .foregroundColor(.orange)
+                    .foregroundColor(gameViewModel.player2Color)
                 
                 Text("\(gameViewModel.player2Score)")
                     .font(.system(size: 48, weight: .bold))
-                    .foregroundColor(.orange)
+                    .foregroundColor(gameViewModel.player2Color)
             }
             .frame(maxWidth: .infinity)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.orange.opacity(0.1))
+                    .fill(gameViewModel.player2Color.opacity(0.1))
             )
         }
     }
@@ -261,7 +274,7 @@ struct MainGameView: View {
                 .foregroundColor(.secondary)
             
             Button("Start New Game") {
-                gameViewModel.startNewGame()
+                showingNewGameSetup = true
             }
             .font(.title2)
             .fontWeight(.semibold)
@@ -274,6 +287,14 @@ struct MainGameView: View {
     }
     
     // MARK: - Helper Functions
+    
+    private func handleNewGameTapped() {
+        if gameViewModel.isGameInProgress {
+            showingNewGameConfirmation = true
+        } else {
+            showingNewGameSetup = true
+        }
+    }
     
     private func buttonText(for score: Int) -> String {
         switch score {

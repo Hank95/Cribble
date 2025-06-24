@@ -5,6 +5,8 @@ struct CircularScoreProgressView: View {
     let player2Score: Int
     let player1Name: String
     let player2Name: String
+    let player1Color: Color
+    let player2Color: Color
     let maxScore: Int = 121
     
     var body: some View {
@@ -18,7 +20,7 @@ struct CircularScoreProgressView: View {
                 // Player 1 progress (outer track - blue)
                 PerimeterPath()
                     .trim(from: 0, to: min(1.0, Double(player1Score) / Double(maxScore)))
-                    .stroke(Color.blue, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                    .stroke(player1Color, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                     .padding(4)
                     .animation(.spring(response: 0.6, dampingFraction: 0.8), value: player1Score)
                 
@@ -30,7 +32,7 @@ struct CircularScoreProgressView: View {
                 // Player 2 progress (inner track - orange)
                 PerimeterPath()
                     .trim(from: 0, to: min(1.0, Double(player2Score) / Double(maxScore)))
-                    .stroke(Color.orange, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                    .stroke(player2Color, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                     .padding(16)
                     .animation(.spring(response: 0.6, dampingFraction: 0.8), value: player2Score)
             }
@@ -111,7 +113,9 @@ struct PerimeterPath: Shape {
         player1Score: 45,
         player2Score: 78,
         player1Name: "Player 1",
-        player2Name: "Player 2"
+        player2Name: "Player 2",
+        player1Color: .blue,
+        player2Color: .orange
     )
     .frame(width: 350, height: 600)
     .padding()
