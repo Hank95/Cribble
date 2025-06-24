@@ -6,8 +6,8 @@ class GameViewModel: ObservableObject {
     @Published var player2Name: String = "Player 2"
     @Published var player1Score: Int = 0
     @Published var player2Score: Int = 0
-    @Published var player1SelectedScore: Int = 1
-    @Published var player2SelectedScore: Int = 1
+    @Published var player1SelectedScore: Int = 0
+    @Published var player2SelectedScore: Int = 0
     @Published var gameStartTime: Date?
     @Published var gameWon: Bool = false
     @Published var winner: String = ""
@@ -18,31 +18,41 @@ class GameViewModel: ObservableObject {
     func startNewGame() {
         player1Score = 0
         player2Score = 0
-        player1SelectedScore = 1
-        player2SelectedScore = 1
+        player1SelectedScore = 0
+        player2SelectedScore = 0
         gameStartTime = Date()
         gameWon = false
         winner = ""
     }
     
-    func addScoreForPlayer1() {
+    func applyScoreForPlayer1() {
         if gameWon { return }
         
-        player1Score += player1SelectedScore
+        // Apply the score change (positive or negative)
+        player1Score = max(0, player1Score + player1SelectedScore)
+        
+        // Check for win condition
         if player1Score >= winningScore {
             endGame(winner: player1Name, loser: player2Name, winnerScore: player1Score, loserScore: player2Score)
         }
-        player1SelectedScore = 1
+        
+        // Reset dial to neutral
+        player1SelectedScore = 0
     }
     
-    func addScoreForPlayer2() {
+    func applyScoreForPlayer2() {
         if gameWon { return }
         
-        player2Score += player2SelectedScore
+        // Apply the score change (positive or negative)
+        player2Score = max(0, player2Score + player2SelectedScore)
+        
+        // Check for win condition
         if player2Score >= winningScore {
             endGame(winner: player2Name, loser: player1Name, winnerScore: player2Score, loserScore: player1Score)
         }
-        player2SelectedScore = 1
+        
+        // Reset dial to neutral
+        player2SelectedScore = 0
     }
     
     private func endGame(winner: String, loser: String, winnerScore: Int, loserScore: Int) {

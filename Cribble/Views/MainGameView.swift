@@ -82,24 +82,26 @@ struct MainGameView: View {
                     ScoreDialView(selectedScore: $gameViewModel.player2SelectedScore)
                         .frame(width: 160, height: 160)
                     
-                    Button("Add \(gameViewModel.player2SelectedScore)") {
-                        gameViewModel.addScoreForPlayer2()
+                    Button(buttonText(for: gameViewModel.player2SelectedScore)) {
+                        gameViewModel.applyScoreForPlayer2()
                     }
                     .font(.subheadline)
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(Color.orange)
+                    .background(buttonColor(for: gameViewModel.player2SelectedScore, playerColor: .orange))
                     .cornerRadius(10)
+                    .disabled(gameViewModel.player2SelectedScore == 0)
                 }
                 .padding(.top, 30)
+                .padding(.horizontal, 20)
                 .rotationEffect(.degrees(180))
                 
                 Spacer()
                 
                 // Scores in the middle
                 playerScoresView
-                    .padding(.vertical, 20)
+                    .padding(.vertical, 8)
                 
                 Spacer()
                 
@@ -113,17 +115,19 @@ struct MainGameView: View {
                     ScoreDialView(selectedScore: $gameViewModel.player1SelectedScore)
                         .frame(width: 160, height: 160)
                     
-                    Button("Add \(gameViewModel.player1SelectedScore)") {
-                        gameViewModel.addScoreForPlayer1()
+                    Button(buttonText(for: gameViewModel.player1SelectedScore)) {
+                        gameViewModel.applyScoreForPlayer1()
                     }
                     .font(.subheadline)
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(Color.blue)
+                    .background(buttonColor(for: gameViewModel.player1SelectedScore, playerColor: .blue))
                     .cornerRadius(10)
+                    .disabled(gameViewModel.player1SelectedScore == 0)
                 }
-                .padding(.bottom, 30)
+                .padding(.bottom, 40)
+                .padding(.horizontal, 20)
             } else {
                 VStack(spacing: 20) {
                     playerScoresView
@@ -148,15 +152,16 @@ struct MainGameView: View {
                     ScoreDialView(selectedScore: $gameViewModel.player1SelectedScore)
                         .frame(width: 140, height: 140)
                     
-                    Button("Add \(gameViewModel.player1SelectedScore)") {
-                        gameViewModel.addScoreForPlayer1()
+                    Button(buttonText(for: gameViewModel.player1SelectedScore)) {
+                        gameViewModel.applyScoreForPlayer1()
                     }
                     .font(.caption)
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Color.blue)
+                    .background(buttonColor(for: gameViewModel.player1SelectedScore, playerColor: .blue))
                     .cornerRadius(8)
+                    .disabled(gameViewModel.player1SelectedScore == 0)
                 }
                 
                 // Scores in the center
@@ -180,15 +185,16 @@ struct MainGameView: View {
                     ScoreDialView(selectedScore: $gameViewModel.player2SelectedScore)
                         .frame(width: 140, height: 140)
                     
-                    Button("Add \(gameViewModel.player2SelectedScore)") {
-                        gameViewModel.addScoreForPlayer2()
+                    Button(buttonText(for: gameViewModel.player2SelectedScore)) {
+                        gameViewModel.applyScoreForPlayer2()
                     }
                     .font(.caption)
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Color.orange)
+                    .background(buttonColor(for: gameViewModel.player2SelectedScore, playerColor: .orange))
                     .cornerRadius(8)
+                    .disabled(gameViewModel.player2SelectedScore == 0)
                 }
             } else {
                 VStack {
@@ -264,6 +270,30 @@ struct MainGameView: View {
             .padding()
             .background(Color.blue)
             .cornerRadius(12)
+        }
+    }
+    
+    // MARK: - Helper Functions
+    
+    private func buttonText(for score: Int) -> String {
+        switch score {
+        case ..<0:
+            return "Subtract \(abs(score))"
+        case 0:
+            return "Select Points"
+        default:
+            return "Add \(score)"
+        }
+    }
+    
+    private func buttonColor(for score: Int, playerColor: Color) -> Color {
+        switch score {
+        case ..<0:
+            return .red
+        case 0:
+            return .gray
+        default:
+            return playerColor
         }
     }
 }

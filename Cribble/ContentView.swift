@@ -9,13 +9,21 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    @StateObject private var gameViewModel = GameViewModel()
+    
     var body: some View {
-        MainGameView()
+        ZStack {
+            MainGameView()
+                .environmentObject(gameViewModel)
+            
+            // Progress ring overlay
+            ScoringOverlayView(gameViewModel: gameViewModel)
+                .ignoresSafeArea()
+        }
     }
 }
 
 #Preview {
     ContentView()
         .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-        .environmentObject(GameViewModel())
 }
