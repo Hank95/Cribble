@@ -5,42 +5,66 @@ struct MainGameView: View {
     @State private var showingWinAlert = false
     @State private var showingNewGameConfirmation = false
     @State private var showingNewGameSetup = false
+    @State private var showingSettings = false
     @State private var isLandscape = false
+    @AppStorage("selectedBackground") private var selectedBackgroundRaw = BackgroundStyle.classic.rawValue
+    
+    private var selectedBackground: BackgroundStyle {
+        BackgroundStyle(rawValue: selectedBackgroundRaw) ?? .classic
+    }
     
     var body: some View {
-        NavigationView {
-            GeometryReader { geometry in
-                let currentLandscape = geometry.size.width > geometry.size.height
+        NavigationStack {
+            ZStack {
+                // Force transparent background
+                Color.clear
+                    .ignoresSafeArea()
                 
-                Group {
-                    if isLandscape {
-                        landscapeLayout
-                    } else {
-                        portraitLayout
+                GeometryReader { geometry in
+                    let currentLandscape = geometry.size.width > geometry.size.height
+                    
+                    Group {
+                        if isLandscape {
+                            landscapeLayout
+                        } else {
+                            portraitLayout
+                        }
+                    }
+                    .animation(.easeInOut(duration: 0.3), value: isLandscape)
+                    .onAppear {
+                        isLandscape = currentLandscape
+                    }
+                    .onChange(of: currentLandscape) { newValue in
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            isLandscape = newValue
+                        }
                     }
                 }
-                .animation(.easeInOut(duration: 0.3), value: isLandscape)
-                .onAppear {
-                    isLandscape = currentLandscape
-                }
-                .onChange(of: currentLandscape) { newValue in
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        isLandscape = newValue
-                    }
-                }
+                .padding()
             }
-            .padding()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Cribble")
+                    Text("CribScore")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(selectedBackground.titleTextColor)
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: HistoryView()) {
-                        Image(systemName: "clock.fill")
-                            .font(.title2)
+                    HStack(spacing: 16) {
+                        NavigationLink(destination: HistoryView()) {
+                            Image(systemName: "clock.fill")
+                                .font(.title2)
+                                .foregroundColor(selectedBackground.titleTextColor)
+                        }
+                        
+                        Button(action: {
+                            showingSettings = true
+                        }) {
+                            Image(systemName: "gearshape.fill")
+                                .font(.title2)
+                                .foregroundColor(selectedBackground.titleTextColor)
+                        }
                     }
                 }
                 
@@ -48,12 +72,31 @@ struct MainGameView: View {
                     Button("New Game") {
                         handleNewGameTapped()
                     }
+                    .foregroundColor(selectedBackground.titleTextColor)
                 }
             }
+            .transparentNavigationBar()
         }
         .onAppear {
             if gameViewModel.gameStartTime == nil {
                 gameViewModel.startNewGame()
+            }
+            
+            // Force navigation controller background to be transparent
+            DispatchQueue.main.async {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first {
+                    window.backgroundColor = .clear
+                    
+                    // Find all navigation controllers and make them transparent
+                    func makeTransparent(view: UIView) {
+                        view.backgroundColor = .clear
+                        for subview in view.subviews {
+                            makeTransparent(view: subview)
+                        }
+                    }
+                    makeTransparent(view: window)
+                }
             }
         }
         .onChange(of: gameViewModel.gameWon) { gameWon in
@@ -79,6 +122,9 @@ struct MainGameView: View {
         }
         .sheet(isPresented: $showingNewGameSetup) {
             NewGameSetupView(gameViewModel: gameViewModel)
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView()
         }
     }
     

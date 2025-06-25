@@ -16,13 +16,17 @@ struct HistoryView: View {
                     Text("No games played yet")
                         .foregroundColor(.secondary)
                         .italic()
+                        .listRowBackground(Color.clear)
                 } else {
                     ForEach(games) { game in
                         GameRowView(game: game)
+                            .listRowBackground(Color.black.opacity(0.1))
                     }
                     .onDelete(perform: deleteGames)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
             .navigationTitle("Game History")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
