@@ -4,6 +4,7 @@ struct SettingsView: View {
     @StateObject private var userSettings: UserSettings
     @State private var selectedBackgroundStyle: BackgroundStyle
     @State private var showingDonationView = false
+    @State private var showingRulesView = false
     @Environment(\.presentationMode) var presentationMode
     
     init() {
@@ -67,6 +68,23 @@ struct SettingsView: View {
                     .padding(.vertical, 8)
                 }
                 
+                Section(header: Text("Help")) {
+                    Button(action: {
+                        showingRulesView = true
+                    }) {
+                        HStack {
+                            Image(systemName: "book.fill")
+                                .foregroundColor(.blue)
+                            Text("Cribbage Rules")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                }
+                
                 Section(header: Text("Support")) {
                     Button(action: {
                         showingDonationView = true
@@ -119,6 +137,10 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingDonationView) {
             DonationView()
+                .environmentObject(userSettings)
+        }
+        .sheet(isPresented: $showingRulesView) {
+            CribbageRulesView()
                 .environmentObject(userSettings)
         }
     }
