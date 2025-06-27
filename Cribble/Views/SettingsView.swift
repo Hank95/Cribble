@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var userSettings: UserSettings
     @State private var selectedBackgroundStyle: BackgroundStyle
+    @State private var showingDonationView = false
     @Environment(\.presentationMode) var presentationMode
     
     init() {
@@ -66,6 +67,23 @@ struct SettingsView: View {
                     .padding(.vertical, 8)
                 }
                 
+                Section(header: Text("Support")) {
+                    Button(action: {
+                        showingDonationView = true
+                    }) {
+                        HStack {
+                            Image(systemName: "heart.fill")
+                                .foregroundColor(.red)
+                            Text("Support the Developer")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                }
+                
                 Section(header: Text("About")) {
                     HStack {
                         Text("Version")
@@ -98,6 +116,10 @@ struct SettingsView: View {
                     }
                 }
             }
+        }
+        .sheet(isPresented: $showingDonationView) {
+            DonationView()
+                .environmentObject(userSettings)
         }
     }
     

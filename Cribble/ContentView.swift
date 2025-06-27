@@ -16,7 +16,7 @@ struct ContentView: View {
             Color.clear
                 .ignoresSafeArea()
             
-            MainTabView()
+            MainGameView()
                 .environmentObject(gameViewModel)
             
             // Progress ring overlay
