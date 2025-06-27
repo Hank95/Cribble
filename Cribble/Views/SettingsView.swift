@@ -5,6 +5,7 @@ struct SettingsView: View {
     @State private var selectedBackgroundStyle: BackgroundStyle
     @State private var showingDonationView = false
     @State private var showingRulesView = false
+    @State private var showingOnboardingView = false
     @Environment(\.presentationMode) var presentationMode
     
     init() {
@@ -83,6 +84,21 @@ struct SettingsView: View {
                                 .font(.caption)
                         }
                     }
+                    
+                    Button(action: {
+                        showingOnboardingView = true
+                    }) {
+                        HStack {
+                            Image(systemName: "play.circle.fill")
+                                .foregroundColor(.green)
+                            Text("App Tour")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
                 }
                 
                 Section(header: Text("Support")) {
@@ -141,6 +157,10 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingRulesView) {
             CribbageRulesView()
+                .environmentObject(userSettings)
+        }
+        .fullScreenCover(isPresented: $showingOnboardingView) {
+            OnboardingView()
                 .environmentObject(userSettings)
         }
     }

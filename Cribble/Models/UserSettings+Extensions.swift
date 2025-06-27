@@ -22,6 +22,7 @@ extension UserSettings {
                 newSettings.autoSaveGames = true
                 newSettings.keepScreenOn = false
                 newSettings.selectedBackground = BackgroundStyle.classic.rawValue
+                newSettings.hasSeenOnboarding = false
                 
                 // Save immediately to ensure the object is properly persisted
                 try context.save()
@@ -39,6 +40,7 @@ extension UserSettings {
             newSettings.autoSaveGames = true
             newSettings.keepScreenOn = false
             newSettings.selectedBackground = BackgroundStyle.classic.rawValue
+            newSettings.hasSeenOnboarding = false
             return newSettings
         }
     }

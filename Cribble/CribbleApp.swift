@@ -77,6 +77,7 @@ struct BackgroundContainerView: View {
     let persistenceController: PersistenceController
     let gameViewModel: GameViewModel
     let initialBackground: BackgroundStyle
+    @State private var showingOnboarding = false
     
     var body: some View {
         let backgroundValue = userSettings.selectedBackground ?? BackgroundStyle.classic.rawValue
@@ -87,14 +88,23 @@ struct BackgroundContainerView: View {
             .environment(\.managedObjectContext, persistenceController.container.viewContext)
             .environmentObject(gameViewModel)
             .environmentObject(userSettings)
+            .fullScreenCover(isPresented: $showingOnboarding) {
+                OnboardingView()
+                    .environmentObject(userSettings)
+            }
             .onAppear {
+                // Check if we should show onboarding
+                if !userSettings.hasSeenOnboarding {
+                    showingOnboarding = true
+                }
+                
                 // Ensure the setting is applied when app becomes active
                 UIApplication.shared.isIdleTimerDisabled = userSettings.keepScreenOn
                 
                 // Apply background at window level as well
                 applyBackgroundToWindow(currentBackground)
             }
-            .onChange(of: currentBackground) { newBackground in
+            .onChange(of: currentBackground) { _, newBackground in
                 applyBackgroundToWindow(newBackground)
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in

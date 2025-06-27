@@ -23,6 +23,7 @@
         <attribute name="autoSaveGames" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="keepScreenOn" optional="NO" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="selectedBackground" optional="NO" attributeType="String" defaultValueString="Classic"/>
+        <attribute name="hasSeenOnboarding" optional="NO" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
     </entity>
     <elements>
         <element name="Game" positionX="-63" positionY="-18" width="128" height="149"/>
