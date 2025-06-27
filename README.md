@@ -55,7 +55,7 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 
 ## Requirements
 
-- iOS 18.5+
+- iOS 17.0+
 - Xcode 15.0+
 - Swift 5.0+
 
