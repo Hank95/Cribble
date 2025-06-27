@@ -4,25 +4,31 @@ struct MainTabView: View {
     @EnvironmentObject var gameViewModel: GameViewModel
     
     var body: some View {
-        ZStack {
-            TabView {
-                MainGameView()
-                    .tabItem {
-                        Image(systemName: "gamecontroller.fill")
-                        Text("Game")
-                    }
-                
-                HistoryView()
-                    .tabItem {
-                        Image(systemName: "clock.fill")
-                        Text("History")
-                    }
-            }
-            .accentColor(.blue)
+        TabView {
+            MainGameView()
+                .background(Color.clear)
+                .tabItem {
+                    Image(systemName: "gamecontroller.fill")
+                    Text("Game")
+                }
             
-            // Progress ring overlay
-            ScoringOverlayView(gameViewModel: gameViewModel)
-                .ignoresSafeArea()
+            HistoryView()
+                .background(Color.clear)
+                .tabItem {
+                    Image(systemName: "clock.fill")
+                    Text("History")
+                }
+        }
+        .background(Color.clear)
+        .accentColor(.blue)
+        .toolbarBackground(.clear, for: .tabBar)
+        .onAppear {
+            // Make TabView background transparent
+            let appearance = UITabBarAppearance()
+            appearance.configureWithTransparentBackground()
+            appearance.backgroundColor = .clear
+            UITabBar.appearance().standardAppearance = appearance
+            UITabBar.appearance().scrollEdgeAppearance = appearance
         }
     }
 }

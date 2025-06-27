@@ -7,19 +7,16 @@ struct MainGameView: View {
     @State private var showingNewGameSetup = false
     @State private var showingSettings = false
     @State private var isLandscape = false
-    @AppStorage("selectedBackground") private var selectedBackgroundRaw = BackgroundStyle.classic.rawValue
+    @EnvironmentObject var userSettings: UserSettings
     
     private var selectedBackground: BackgroundStyle {
-        BackgroundStyle(rawValue: selectedBackgroundRaw) ?? .classic
+        let backgroundValue = userSettings.selectedBackground ?? BackgroundStyle.classic.rawValue
+        return BackgroundStyle(rawValue: backgroundValue) ?? .classic
     }
     
     var body: some View {
         NavigationStack {
             ZStack {
-                // Force transparent background
-                Color.clear
-                    .ignoresSafeArea()
-                
                 GeometryReader { geometry in
                     let currentLandscape = geometry.size.width > geometry.size.height
                     
@@ -77,25 +74,18 @@ struct MainGameView: View {
             }
             .transparentNavigationBar()
         }
+        .background(.clear)
         .onAppear {
             if gameViewModel.gameStartTime == nil {
                 gameViewModel.startNewGame()
             }
             
-            // Force navigation controller background to be transparent
+            // Ensure NavigationStack background is transparent
             DispatchQueue.main.async {
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = windowScene.windows.first {
-                    window.backgroundColor = .clear
-                    
-                    // Find all navigation controllers and make them transparent
-                    func makeTransparent(view: UIView) {
-                        view.backgroundColor = .clear
-                        for subview in view.subviews {
-                            makeTransparent(view: subview)
-                        }
-                    }
-                    makeTransparent(view: window)
+                if let window = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .first?.windows.first {
+                    window.rootViewController?.view.backgroundColor = .clear
                 }
             }
         }

@@ -1,40 +1,69 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("enableHaptics") private var enableHaptics = true
-    @AppStorage("enableSounds") private var enableSounds = true
-    @AppStorage("showExtendedScoreIndicator") private var showExtendedScoreIndicator = true
-    @AppStorage("autoSaveGames") private var autoSaveGames = true
-    @AppStorage("keepScreenOn") private var keepScreenOn = false
-    @AppStorage("selectedBackground") private var selectedBackgroundRaw = BackgroundStyle.classic.rawValue
-    
+    @StateObject private var userSettings: UserSettings
+    @State private var selectedBackgroundStyle: BackgroundStyle
     @Environment(\.presentationMode) var presentationMode
     
-    private var selectedBackground: BackgroundStyle {
-        get { BackgroundStyle(rawValue: selectedBackgroundRaw) ?? .classic }
-        set { selectedBackgroundRaw = newValue.rawValue }
+    init() {
+        let settings = PersistenceController.shared.getUserSettings()
+        _userSettings = StateObject(wrappedValue: settings)
+        _selectedBackgroundStyle = State(initialValue: BackgroundStyle(rawValue: settings.selectedBackground ?? BackgroundStyle.classic.rawValue) ?? .classic)
     }
+    
     
     var body: some View {
         NavigationView {
             Form {
                 Section(header: Text("Game Options")) {
-                    Toggle("Haptic Feedback", isOn: $enableHaptics)
-                    Toggle("Sound Effects", isOn: $enableSounds)
-                    Toggle("Show Extended Score Indicator", isOn: $showExtendedScoreIndicator)
-                    Toggle("Auto-Save Completed Games", isOn: $autoSaveGames)
+                    Toggle("Haptic Feedback", isOn: Binding(
+                        get: { userSettings.enableHaptics },
+                        set: { newValue in
+                            userSettings.enableHaptics = newValue
+                            userSettings.save()
+                        }
+                    ))
+                    Toggle("Sound Effects", isOn: Binding(
+                        get: { userSettings.enableSounds },
+                        set: { newValue in
+                            userSettings.enableSounds = newValue
+                            userSettings.save()
+                        }
+                    ))
+                    Toggle("Show Extended Score Indicator", isOn: Binding(
+                        get: { userSettings.showExtendedScoreIndicator },
+                        set: { newValue in
+                            userSettings.showExtendedScoreIndicator = newValue
+                            userSettings.save()
+                        }
+                    ))
+                    Toggle("Auto-Save Completed Games", isOn: Binding(
+                        get: { userSettings.autoSaveGames },
+                        set: { newValue in
+                            userSettings.autoSaveGames = newValue
+                            userSettings.save()
+                        }
+                    ))
                 }
                 
                 Section(header: Text("Display")) {
-                    Toggle("Keep Screen On", isOn: $keepScreenOn)
-                        .onChange(of: keepScreenOn) { _, newValue in
+                    Toggle("Keep Screen On", isOn: Binding(
+                        get: { userSettings.keepScreenOn },
+                        set: { newValue in
+                            userSettings.keepScreenOn = newValue
+                            userSettings.save()
                             UIApplication.shared.isIdleTimerDisabled = newValue
                         }
+                    ))
                 }
                 
                 Section(header: Text("Background Theme")) {
-                    BackgroundSelectionGrid(selectedBackgroundRaw: $selectedBackgroundRaw)
-                        .padding(.vertical, 8)
+                    BackgroundSelectionGrid(selectedBackground: selectedBackgroundStyle) { newStyle in
+                        selectedBackgroundStyle = newStyle
+                        userSettings.selectedBackground = newStyle.rawValue
+                        userSettings.save()
+                    }
+                    .padding(.vertical, 8)
                 }
                 
                 Section(header: Text("About")) {
@@ -73,22 +102,21 @@ struct SettingsView: View {
     }
     
     private func resetSettings() {
-        enableHaptics = true
-        enableSounds = true
-        showExtendedScoreIndicator = true
-        autoSaveGames = true
-        keepScreenOn = false
+        userSettings.enableHaptics = true
+        userSettings.enableSounds = true
+        userSettings.showExtendedScoreIndicator = true
+        userSettings.autoSaveGames = true
+        userSettings.keepScreenOn = false
+        userSettings.selectedBackground = BackgroundStyle.classic.rawValue
+        selectedBackgroundStyle = .classic
+        userSettings.save()
         UIApplication.shared.isIdleTimerDisabled = false
-        selectedBackgroundRaw = BackgroundStyle.classic.rawValue
     }
 }
 
 struct BackgroundSelectionGrid: View {
-    @Binding var selectedBackgroundRaw: String
-    
-    private var selectedBackground: BackgroundStyle {
-        BackgroundStyle(rawValue: selectedBackgroundRaw) ?? .classic
-    }
+    let selectedBackground: BackgroundStyle
+    let onSelectionChange: (BackgroundStyle) -> Void
     
     let columns = [GridItem(.adaptive(minimum: 80))]
     
@@ -98,7 +126,7 @@ struct BackgroundSelectionGrid: View {
                 BackgroundOptionView(
                     style: style,
                     isSelected: selectedBackground == style,
-                    action: { selectedBackgroundRaw = style.rawValue }
+                    action: { onSelectionChange(style) }
                 )
             }
         }

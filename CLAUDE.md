@@ -10,16 +10,16 @@ CribScore is a SwiftUI iOS app for cribbage scorekeeping. It tracks games betwee
 
 ```bash
 # Build for iOS Simulator
-xcodebuild -project Cribble.xcodeproj -scheme CribScore -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' build
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' build
 
 # Build for device
-xcodebuild -project Cribble.xcodeproj -scheme CribScore -configuration Release build
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -configuration Release build
 
 # Run tests
-xcodebuild -project Cribble.xcodeproj -scheme CribScore -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' test
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' test
 
 # Clean build
-xcodebuild -project Cribble.xcodeproj -scheme CribScore clean
+xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
 ```
 
 ## Architecture

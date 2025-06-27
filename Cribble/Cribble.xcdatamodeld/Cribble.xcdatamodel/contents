@@ -16,8 +16,17 @@
         <attribute name="gamesLost" optional="NO" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="averageScore" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
+    <entity name="UserSettings" representedClassName="UserSettings" syncable="YES" codeGenerationType="class">
+        <attribute name="enableHaptics" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="enableSounds" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="showExtendedScoreIndicator" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="autoSaveGames" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="keepScreenOn" optional="NO" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="selectedBackground" optional="NO" attributeType="String" defaultValueString="Classic"/>
+    </entity>
     <elements>
         <element name="Game" positionX="-63" positionY="-18" width="128" height="149"/>
         <element name="PlayerStats" positionX="144" positionY="-9" width="128" height="104"/>
+        <element name="UserSettings" positionX="-54" positionY="135" width="128" height="119"/>
     </elements>
 </model>

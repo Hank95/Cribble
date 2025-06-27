@@ -13,13 +13,17 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            MainGameView()
+            Color.clear
+                .ignoresSafeArea()
+            
+            MainTabView()
                 .environmentObject(gameViewModel)
             
             // Progress ring overlay
             ScoringOverlayView(gameViewModel: gameViewModel)
                 .ignoresSafeArea()
         }
+        .background(Color.clear)
     }
 }
 

@@ -73,6 +73,10 @@ struct PersistenceController {
         container.viewContext.automaticallyMergesChangesFromParent = true
     }
     
+    func getUserSettings() -> UserSettings {
+        return UserSettings.fetchOrCreate(in: container.viewContext)
+    }
+    
     func saveGame(winner: String, loser: String, winnerScore: Int16, loserScore: Int16, duration: Double? = nil) {
         let context = container.viewContext
         

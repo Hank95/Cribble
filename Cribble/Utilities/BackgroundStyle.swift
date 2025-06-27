@@ -38,32 +38,8 @@ enum BackgroundStyle: String, CaseIterable, Identifiable {
                 .ignoresSafeArea()
             
         case .feltGreen:
-            ZStack {
-                Color(red: 0.18, green: 0.35, blue: 0.25)
-                    .ignoresSafeArea()
-                
-                // Add subtle texture overlay
-                Color.black.opacity(0.05)
-                    .ignoresSafeArea()
-                    .overlay(
-                        GeometryReader { geometry in
-                            Path { path in
-                                let width = geometry.size.width
-                                let height = geometry.size.height
-                                let spacing: CGFloat = 2
-                                
-                                for x in stride(from: 0, to: width, by: spacing) {
-                                    for y in stride(from: 0, to: height, by: spacing) {
-                                        if Int.random(in: 0...3) == 0 {
-                                            path.addEllipse(in: CGRect(x: x, y: y, width: 0.5, height: 0.5))
-                                        }
-                                    }
-                                }
-                            }
-                            .fill(Color.black.opacity(0.03))
-                        }
-                    )
-            }
+            Color(red: 0.18, green: 0.35, blue: 0.25)
+                .ignoresSafeArea()
             
         case .midnightBlue:
             ZStack {
@@ -103,8 +79,6 @@ enum BackgroundStyle: String, CaseIterable, Identifiable {
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
-            .opacity(0.8)
-            .background(Color(UIColor.systemBackground))
             
         case .coolGradient:
             LinearGradient(
@@ -117,12 +91,10 @@ enum BackgroundStyle: String, CaseIterable, Identifiable {
                 endPoint: .bottomLeading
             )
             .ignoresSafeArea()
-            .opacity(0.7)
-            .background(Color(UIColor.systemBackground))
             
         case .subtlePattern:
             ZStack {
-                Color(UIColor.secondarySystemBackground)
+                Color(UIColor.systemBackground)
                     .ignoresSafeArea()
                 
                 GeometryReader { geometry in
@@ -144,7 +116,7 @@ enum BackgroundStyle: String, CaseIterable, Identifiable {
                             }
                         }
                     }
-                    .stroke(Color(UIColor.tertiaryLabel).opacity(0.1), lineWidth: 1)
+                    .stroke(Color.primary.opacity(0.08), lineWidth: 1)
                 }
                 .ignoresSafeArea()
             }
