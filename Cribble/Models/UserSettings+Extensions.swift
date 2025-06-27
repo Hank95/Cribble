@@ -17,9 +17,6 @@ extension UserSettings {
                 print("DEBUG: Creating new UserSettings")
                 let newSettings = UserSettings(context: context)
                 newSettings.enableHaptics = true
-                newSettings.enableSounds = true
-                newSettings.showExtendedScoreIndicator = true
-                newSettings.autoSaveGames = true
                 newSettings.keepScreenOn = false
                 newSettings.selectedBackground = BackgroundStyle.classic.rawValue
                 newSettings.hasSeenOnboarding = false
@@ -35,9 +32,6 @@ extension UserSettings {
             // Return a new unsaved instance as fallback
             let newSettings = UserSettings(context: context)
             newSettings.enableHaptics = true
-            newSettings.enableSounds = true
-            newSettings.showExtendedScoreIndicator = true
-            newSettings.autoSaveGames = true
             newSettings.keepScreenOn = false
             newSettings.selectedBackground = BackgroundStyle.classic.rawValue
             newSettings.hasSeenOnboarding = false

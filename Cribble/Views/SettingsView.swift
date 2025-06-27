@@ -26,27 +26,6 @@ struct SettingsView: View {
                             userSettings.save()
                         }
                     ))
-                    Toggle("Sound Effects", isOn: Binding(
-                        get: { userSettings.enableSounds },
-                        set: { newValue in
-                            userSettings.enableSounds = newValue
-                            userSettings.save()
-                        }
-                    ))
-                    Toggle("Show Extended Score Indicator", isOn: Binding(
-                        get: { userSettings.showExtendedScoreIndicator },
-                        set: { newValue in
-                            userSettings.showExtendedScoreIndicator = newValue
-                            userSettings.save()
-                        }
-                    ))
-                    Toggle("Auto-Save Completed Games", isOn: Binding(
-                        get: { userSettings.autoSaveGames },
-                        set: { newValue in
-                            userSettings.autoSaveGames = newValue
-                            userSettings.save()
-                        }
-                    ))
                 }
                 
                 Section(header: Text("Display")) {
@@ -167,9 +146,6 @@ struct SettingsView: View {
     
     private func resetSettings() {
         userSettings.enableHaptics = true
-        userSettings.enableSounds = true
-        userSettings.showExtendedScoreIndicator = true
-        userSettings.autoSaveGames = true
         userSettings.keepScreenOn = false
         userSettings.selectedBackground = BackgroundStyle.classic.rawValue
         selectedBackgroundStyle = .classic

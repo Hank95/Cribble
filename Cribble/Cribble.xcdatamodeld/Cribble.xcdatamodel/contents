@@ -18,9 +18,6 @@
     </entity>
     <entity name="UserSettings" representedClassName="UserSettings" syncable="YES" codeGenerationType="class">
         <attribute name="enableHaptics" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
-        <attribute name="enableSounds" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
-        <attribute name="showExtendedScoreIndicator" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
-        <attribute name="autoSaveGames" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="keepScreenOn" optional="NO" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="selectedBackground" optional="NO" attributeType="String" defaultValueString="Classic"/>
         <attribute name="hasSeenOnboarding" optional="NO" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>

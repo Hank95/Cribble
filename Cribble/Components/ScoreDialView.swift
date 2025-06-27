@@ -6,6 +6,7 @@ struct ScoreDialView: View {
     @State private var isDragging: Bool = false
     @State private var lastHapticValue: Int = 0
     @State private var isAddMode: Bool = true // true = add mode, false = subtract mode
+    @EnvironmentObject var userSettings: UserSettings
     
     private let maxScore = 29
     private let dialRadius: CGFloat = 80
@@ -219,7 +220,9 @@ struct ScoreDialView: View {
             
             // Haptic feedback on value change
             if abs(newScore - lastHapticValue) >= 1 {
-                triggerHapticFeedback()
+                if userSettings.enableHaptics {
+                    triggerHapticFeedback()
+                }
                 lastHapticValue = newScore
             }
         }
@@ -228,7 +231,9 @@ struct ScoreDialView: View {
     private func handleDragEnded() {
         isDragging = false
         snapToNearestValue()
-        triggerHapticFeedback(style: .medium)
+        if userSettings.enableHaptics {
+            triggerHapticFeedback(style: .medium)
+        }
     }
     
     private func updateRotationForScore() {
