@@ -12,12 +12,17 @@ struct ScoringOverlayView: View {
                 player1Name: gameViewModel.player1Name,
                 player2Name: gameViewModel.player2Name,
                 player1Color: gameViewModel.player1Color,
-                player2Color: gameViewModel.player2Color
+                player2Color: gameViewModel.player2Color,
+                gameWon: gameViewModel.gameWon,
+                winner: gameViewModel.winner,
+                onAnimationComplete: {
+                    gameViewModel.startNewGame()
+                }
             )
             .frame(width: geometry.size.width, height: geometry.size.height)
-            .allowsHitTesting(false) // Allow touches to pass through to underlying UI
+            .allowsHitTesting(gameViewModel.gameWon) // Allow touches only when game is won
         }
-        .allowsHitTesting(false) // Allow touches to pass through to underlying UI
+        .allowsHitTesting(gameViewModel.gameWon) // Allow touches only when game is won
     }
 }
 

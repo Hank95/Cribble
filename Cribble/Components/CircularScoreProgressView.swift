@@ -8,6 +8,12 @@ struct CircularScoreProgressView: View {
     let player1Color: Color
     let player2Color: Color
     let maxScore: Int = 121
+    let gameWon: Bool
+    let winner: String
+    var onAnimationComplete: (() -> Void)?
+    
+    @State private var dashPhase: CGFloat = 0
+    @State private var animationTimer: Timer?
     
     var body: some View {
         GeometryReader { geometry in
@@ -18,11 +24,25 @@ struct CircularScoreProgressView: View {
                     .padding(4)
                 
                 // Player 1 progress (outer track - blue)
-                PerimeterPath()
-                    .trim(from: 0, to: min(1.0, Double(player1Score) / Double(maxScore)))
-                    .stroke(player1Color, style: StrokeStyle(lineWidth: 8, lineCap: .round))
-                    .padding(4)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.8), value: player1Score)
+                if gameWon && winner == player1Name {
+                    // Winning animation - carnival lights
+                    PerimeterPath()
+                        .trim(from: 0, to: min(1.0, Double(player1Score) / Double(maxScore)))
+                        .stroke(player1Color, style: StrokeStyle(
+                            lineWidth: 8,
+                            lineCap: .round,
+                            dash: [10, 10],
+                            dashPhase: dashPhase
+                        ))
+                        .padding(4)
+                } else {
+                    // Normal progress bar
+                    PerimeterPath()
+                        .trim(from: 0, to: min(1.0, Double(player1Score) / Double(maxScore)))
+                        .stroke(player1Color, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                        .padding(4)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: player1Score)
+                }
                 
                 // Background track - inner perimeter
                 PerimeterPath()
@@ -30,13 +50,60 @@ struct CircularScoreProgressView: View {
                     .padding(16)
                 
                 // Player 2 progress (inner track - orange)
-                PerimeterPath()
-                    .trim(from: 0, to: min(1.0, Double(player2Score) / Double(maxScore)))
-                    .stroke(player2Color, style: StrokeStyle(lineWidth: 6, lineCap: .round))
-                    .padding(16)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.8), value: player2Score)
+                if gameWon && winner == player2Name {
+                    // Winning animation - carnival lights
+                    PerimeterPath()
+                        .trim(from: 0, to: min(1.0, Double(player2Score) / Double(maxScore)))
+                        .stroke(player2Color, style: StrokeStyle(
+                            lineWidth: 6,
+                            lineCap: .round,
+                            dash: [10, 10],
+                            dashPhase: dashPhase
+                        ))
+                        .padding(16)
+                } else {
+                    // Normal progress bar
+                    PerimeterPath()
+                        .trim(from: 0, to: min(1.0, Double(player2Score) / Double(maxScore)))
+                        .stroke(player2Color, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                        .padding(16)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: player2Score)
+                }
+            }
+            .onAppear {
+                if gameWon {
+                    startWinAnimation()
+                }
+            }
+            .onChange(of: gameWon) { oldValue, newValue in
+                if newValue && !oldValue {
+                    startWinAnimation()
+                } else if !newValue && oldValue {
+                    stopWinAnimation()
+                }
+            }
+            .onTapGesture {
+                if gameWon {
+                    stopWinAnimation()
+                    onAnimationComplete?()
+                }
             }
         }
+    }
+    
+    private func startWinAnimation() {
+        animationTimer?.invalidate()
+        dashPhase = 0
+        
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.03, repeats: true) { _ in
+            dashPhase -= 2 // Move dashes along the path
+        }
+    }
+    
+    private func stopWinAnimation() {
+        animationTimer?.invalidate()
+        animationTimer = nil
+        dashPhase = 0
     }
 }
 
@@ -110,12 +177,14 @@ struct PerimeterPath: Shape {
 
 #Preview {
     CircularScoreProgressView(
-        player1Score: 45,
+        player1Score: 121,
         player2Score: 78,
         player1Name: "Player 1",
         player2Name: "Player 2",
         player1Color: .blue,
-        player2Color: .orange
+        player2Color: .orange,
+        gameWon: true,
+        winner: "Player 1"
     )
     .frame(width: 350, height: 600)
     .padding()
