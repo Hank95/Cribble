@@ -9,7 +9,9 @@ struct ScoreDialView: View {
     @EnvironmentObject var userSettings: UserSettings
     
     private let maxScore = 29
-    private let dialRadius: CGFloat = 80
+    private var dialRadius: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 120 : 80
+    }
     private let degreesPerValue: Double = 360.0 / 29.0 // 360 degrees for 29 points
     
     var body: some View {
@@ -38,12 +40,12 @@ struct ScoreDialView: View {
             // Center content
             VStack(spacing: 4) {
                 Text(displayText)
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
+                    .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 48 : 36, weight: .bold, design: .rounded))
                     .foregroundColor(textColor)
                     .contentTransition(.numericText())
                 
                 Text(actionText)
-                    .font(.caption)
+                    .font(UIDevice.current.userInterfaceIdiom == .pad ? .subheadline : .caption)
                     .fontWeight(.medium)
                     .foregroundColor(textColor.opacity(0.7))
             }
@@ -51,8 +53,8 @@ struct ScoreDialView: View {
             // Pointer indicator
             Circle()
                 .fill(pointerColor)
-                .frame(width: 16, height: 16)
-                .offset(y: -dialRadius - 8)
+                .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? 20 : 16, height: UIDevice.current.userInterfaceIdiom == .pad ? 20 : 16)
+                .offset(y: -dialRadius - (UIDevice.current.userInterfaceIdiom == .pad ? 10 : 8))
                 .rotationEffect(.degrees(rotationAngle))
             
             // Invisible interaction area
@@ -73,7 +75,7 @@ struct ScoreDialView: View {
         .onAppear {
             updateRotationForScore()
         }
-        .onChange(of: selectedScore) {
+        .onChange(of: selectedScore) { _, _ in
             updateRotationForScore()
         }
     }

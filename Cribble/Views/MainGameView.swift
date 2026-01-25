@@ -78,7 +78,7 @@ struct MainGameView: View {
                     .onAppear {
                         isLandscape = currentLandscape
                     }
-                    .onChange(of: currentLandscape) { newValue in
+                    .onChange(of: currentLandscape) { _, newValue in
                         withAnimation(.easeInOut(duration: 0.3)) {
                             isLandscape = newValue
                         }
@@ -138,7 +138,7 @@ struct MainGameView: View {
                 }
             }
         }
-        .onChange(of: gameViewModel.gameWon) { gameWon in
+        .onChange(of: gameViewModel.gameWon) { _, gameWon in
             if gameWon {
                 showingWinAlert = true
             }

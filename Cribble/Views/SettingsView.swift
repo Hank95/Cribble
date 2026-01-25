@@ -6,7 +6,7 @@ struct SettingsView: View {
     @State private var showingDonationView = false
     @State private var showingRulesView = false
     @State private var showingOnboardingView = false
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     
     init() {
         let settings = PersistenceController.shared.getUserSettings()
@@ -16,7 +16,7 @@ struct SettingsView: View {
     
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: Text("Game Options")) {
                     Toggle("Haptic Feedback", isOn: Binding(
@@ -125,7 +125,7 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }
                 }
             }

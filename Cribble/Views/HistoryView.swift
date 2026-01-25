@@ -10,7 +10,7 @@ struct HistoryView: View {
     private var games: FetchedResults<Game>
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 if games.isEmpty {
                     Text("No games played yet")

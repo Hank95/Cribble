@@ -23,7 +23,7 @@ struct NewGameSetupView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section("Player 1") {
                     TextField("Player 1 Name", text: $player1Name)
