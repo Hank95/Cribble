@@ -3,14 +3,17 @@ import SwiftUI
 struct NewGameSetupView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var gameViewModel: GameViewModel
-    
+
     @State private var player1Name: String
     @State private var player2Name: String
     @State private var player1Color: Color
     @State private var player2Color: Color
-    
+
     let availableColors: [Color] = [.blue, .red, .green, .orange, .purple, .pink, .cyan, .mint, .teal, .indigo]
-    
+
+    // Adaptive grid that adjusts based on available width
+    private let adaptiveColumns = [GridItem(.adaptive(minimum: 44, maximum: 60))]
+
     init(gameViewModel: GameViewModel) {
         self.gameViewModel = gameViewModel
         self._player1Name = State(initialValue: gameViewModel.player1Name)
@@ -18,19 +21,19 @@ struct NewGameSetupView: View {
         self._player1Color = State(initialValue: gameViewModel.player1Color)
         self._player2Color = State(initialValue: gameViewModel.player2Color)
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
                 Section("Player 1") {
                     TextField("Player 1 Name", text: $player1Name)
-                    
+
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Color")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 12) {
+
+                        LazyVGrid(columns: adaptiveColumns, spacing: 10) {
                             ForEach(availableColors, id: \.self) { color in
                                 ColorSelectionButton(
                                     color: color,
@@ -42,16 +45,16 @@ struct NewGameSetupView: View {
                     }
                     .padding(.vertical, 8)
                 }
-                
+
                 Section("Player 2") {
                     TextField("Player 2 Name", text: $player2Name)
-                    
+
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Color")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 12) {
+
+                        LazyVGrid(columns: adaptiveColumns, spacing: 10) {
                             ForEach(availableColors, id: \.self) { color in
                                 ColorSelectionButton(
                                     color: color,
@@ -94,12 +97,13 @@ struct ColorSelectionButton: View {
     let color: Color
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Circle()
                 .fill(color)
-                .frame(width: 40, height: 40)
+                .aspectRatio(1, contentMode: .fit)
+                .frame(minWidth: 36, maxWidth: 44)
                 .overlay(
                     Circle()
                         .stroke(isSelected ? Color.primary : Color.clear, lineWidth: 3)
