@@ -154,7 +154,7 @@ struct OnboardingView: View {
                         .foregroundColor(.primary)
                         .multilineTextAlignment(.center)
 
-                    Text("Use our custom score dial to quickly add points during gameplay")
+                    Text("Tap to add +1 or drag to select any point value")
                         .font(isCompact ? .subheadline : .title3)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -185,7 +185,7 @@ struct OnboardingView: View {
                             .font(isCompact ? .subheadline : .headline)
                             .foregroundColor(.blue)
 
-                        Text("Drag to select • Tap to confirm")
+                        Text("Tap for +1 • Drag for more")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -196,16 +196,16 @@ struct OnboardingView: View {
                 // Use adaptive layout for features
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: isCompact ? 130 : 150))], spacing: isCompact ? 8 : 16) {
                     OnboardingFeature(
-                        icon: "hand.draw.fill",
-                        title: "Drag & Drop",
-                        description: "Smooth gesture controls",
+                        icon: "hand.tap.fill",
+                        title: "Tap for +1",
+                        description: "Quick single point adds",
                         isCompact: isCompact
                     )
 
                     OnboardingFeature(
-                        icon: "waveform.circle.fill",
-                        title: "Haptic Feedback",
-                        description: "Feel every selection",
+                        icon: "hand.draw.fill",
+                        title: "Drag to Select",
+                        description: "Choose any value 1-29",
                         isCompact: isCompact
                     )
                 }

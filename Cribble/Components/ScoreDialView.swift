@@ -84,7 +84,7 @@ struct ScoreDialView: View {
                     .frame(width: size, height: size)
                     .contentShape(Circle())
                     .gesture(
-                        DragGesture()
+                        DragGesture(minimumDistance: 5)
                             .onChanged { value in
                                 handleDragChanged(value, radius: radius)
                             }
@@ -92,6 +92,9 @@ struct ScoreDialView: View {
                                 handleDragEnded()
                             }
                     )
+                    .onTapGesture {
+                        handleTap()
+                    }
             }
             .frame(width: size, height: size)
             .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
@@ -260,6 +263,30 @@ struct ScoreDialView: View {
         snapToNearestValue()
         if userSettings.enableHaptics {
             triggerHapticFeedback(style: .medium)
+        }
+    }
+
+    private func handleTap() {
+        // Increment by 1, capping at maxScore
+        let newScore: Int
+        if selectedScore >= 0 {
+            // In add mode or at zero: increment up to maxScore
+            newScore = min(selectedScore + 1, maxScore)
+            isAddMode = true
+        } else {
+            // In subtract mode: move toward zero (less negative)
+            newScore = selectedScore + 1
+            if newScore == 0 {
+                isAddMode = true
+            }
+        }
+
+        if newScore != selectedScore {
+            selectedScore = newScore
+            updateRotationForScore()
+            if userSettings.enableHaptics {
+                triggerHapticFeedback()
+            }
         }
     }
     

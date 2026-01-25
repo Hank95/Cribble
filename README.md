@@ -2,21 +2,37 @@
 
 A modern iOS app for keeping score in cribbage games, built with SwiftUI and Core Data.
 
-**Current Version: 1.1**
+**Current Version: 1.2**
 
 ## Features
 
+### Scoring
 - **Custom Score Dial Interface**: Intuitive circular dial for selecting points (1-29 range)
+- **Tap to Increment**: Quick tap on the dial to add +1 point instantly
+- **Drag to Select**: Drag clockwise to add points, counter-clockwise to subtract
 - **Dual Player Support**: Track scores for two players with customizable names and colors
+- **Haptic Feedback**: Configurable vibration feedback for dial interactions
+
+### Statistics & League
+- **League Table**: Track player rankings with wins, losses, and match points
+- **Head-to-Head Records**: Compare your record against any opponent
+- **Skunk Tracking**: Earn bonus match points for skunks (2 pts) and double skunks (3 pts)
+- **Player Management**: Rename, merge, or delete players from Game History
+
+### Game Features
 - **Game History**: Persistent storage of completed games with Core Data
-- **Player Statistics**: Track wins, losses, and average scores
+- **Player Autocomplete**: Quick player selection when starting new games
+- **Enhanced Game Over Screen**: Shows skunk status and match points earned
+- **Circular Score Progress**: Animated progress bars showing game advancement
+
+### Customization
 - **Customizable Backgrounds**: Choose from 6 visual background themes
 - **Settings Persistence**: All user preferences are saved using Core Data
 - **Fully Responsive Design**: Adapts to all screen sizes from iPhone SE to iPad Pro, portrait and landscape
-- **Circular Score Progress**: Animated progress bars showing game advancement
+
+### Help & Learning
 - **Interactive Onboarding**: 4-page tutorial with live score dial demo
 - **Cribbage Rules Reference**: Comprehensive in-app rules documentation
-- **Haptic Feedback**: Configurable vibration feedback for dial interactions
 
 ## Background Themes
 
@@ -54,16 +70,22 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 
 ### Core Data Model
 
-- **Game**: Stores completed games (players, scores, date, duration)
-- **PlayerStats**: Cumulative player statistics
+- **Game**: Stores completed games (players, scores, date, duration) with Player relationships
+- **Player**: Player identity with name, creation date, and game relationships for league tracking
+- **PlayerStats**: Legacy cumulative player statistics (deprecated, replaced by Player entity)
 - **UserSettings**: Persistent user preferences (haptics, keep screen on, background theme, onboarding status)
 
 ### Key Components
 
 - **GameViewModel**: Central game state management and scoring logic
-- **ScoreDialView**: Custom circular input control with haptic feedback and responsive sizing via GeometryReader
+- **ScoreDialView**: Custom circular input control with tap-to-increment, drag gestures, and haptic feedback
 - **CircularScoreProgressView**: Animated progress bars with winning animations
 - **ScoringOverlayView**: Floating progress indicator overlay
+- **PlayerPickerView**: Autocomplete player selection for new games
+- **LeagueTableView**: League standings with rankings and match points
+- **HeadToHeadView**: Player comparison statistics
+- **PlayerManagementView**: Rename, merge, and delete players
+- **StatsService**: Statistics computation layer for league and head-to-head data
 - **OnboardingView**: Interactive 4-page tutorial walkthrough with adaptive layouts
 - **CribbageRulesView**: Comprehensive rules reference
 - **BackgroundStyle**: Configurable background themes with proper contrast
@@ -99,11 +121,22 @@ xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
 
 ## How to Play
 
-1. Start a new game and enter player names
-2. Use the score dial to select points earned in each hand
-3. Tap "Add [points]" to apply the score
+1. Start a new game and enter player names (existing players auto-complete)
+2. Use the score dial to select points:
+   - **Tap** the dial to quickly add +1 point
+   - **Drag clockwise** to select larger point values (1-29)
+   - **Drag counter-clockwise** to subtract points if needed
+3. Tap the "Add [points]" button to apply the score
 4. First player to reach 121 points wins
 5. Game automatically saves to history when completed
+
+### Scoring Bonuses
+- **Skunk**: Win while opponent has less than 91 points = 2 match points
+- **Double Skunk**: Win while opponent has less than 61 points = 3 match points
+- Regular win = 1 match point
+
+### Statistics
+Access league standings, head-to-head records, and player management from the **Game History** screen (clock icon in toolbar).
 
 ## Development
 
@@ -119,7 +152,17 @@ The app follows iOS best practices:
 
 ## Version History
 
-### 1.1 (Current)
+### 1.2 (Current)
+- **Tap to Increment**: Quick tap on the score dial to add +1 point instantly
+- **League Table**: Track player rankings with wins, losses, and match points
+- **Head-to-Head Records**: Compare your record against any opponent
+- **Skunk Tracking**: Earn bonus match points for skunks and double skunks
+- **Player Management**: Rename, merge, or delete players
+- **Player Autocomplete**: Quick player selection when starting new games
+- **Enhanced Game Over Screen**: Shows skunk status and match points earned
+- **Updated Onboarding**: New tutorial content covering league and statistics features
+
+### 1.1
 - **Responsive Layouts**: Full support for all screen sizes from iPhone SE to iPad Pro
 - **Improved ScoreDialView**: Now uses GeometryReader for proper frame sizing on all devices
 - **Landscape Mode Fixes**: Proper spacing for player names, dials, and buttons in landscape orientation
