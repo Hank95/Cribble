@@ -8,10 +8,13 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 - **Dual Player Support**: Track scores for two players with customizable names and colors
 - **Game History**: Persistent storage of completed games with Core Data
 - **Player Statistics**: Track wins, losses, and average scores
-- **Customizable Backgrounds**: Choose from multiple background themes
+- **Customizable Backgrounds**: Choose from 6 visual background themes
 - **Settings Persistence**: All user preferences are saved using Core Data
 - **Responsive Design**: Supports both portrait and landscape orientations
-- **Immersive Game Mode**: Full-screen view with circular progress bars
+- **Circular Score Progress**: Animated progress bars showing game advancement
+- **Interactive Onboarding**: 4-page tutorial with live score dial demo
+- **Cribbage Rules Reference**: Comprehensive in-app rules documentation
+- **Haptic Feedback**: Configurable vibration feedback for dial interactions
 
 ## Background Themes
 
@@ -24,12 +27,19 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 
 ## Settings
 
-- **Haptic Feedback**: Toggle haptic feedback for dial interactions
-- **Sound Effects**: Enable/disable sound feedback
-- **Extended Score Indicator**: Show indicator when score exceeds 15
-- **Auto-Save Games**: Automatically save completed games
+**Game Options:**
+- **Haptic Feedback**: Toggle vibration feedback for dial interactions
+
+**Display:**
 - **Keep Screen On**: Prevent screen from sleeping during games
-- **Background Theme**: Choose your preferred visual theme
+- **Background Theme**: Choose from 6 visual themes
+
+**Help:**
+- **Cribbage Rules**: Comprehensive rules reference
+- **App Tour**: Replay the onboarding walkthrough
+
+**Support:**
+- **Donation Links**: Ko-fi, Buy Me a Coffee, and PayPal options
 
 ## Technical Details
 
@@ -44,13 +54,16 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 
 - **Game**: Stores completed games (players, scores, date, duration)
 - **PlayerStats**: Cumulative player statistics
-- **UserSettings**: Persistent user preferences
+- **UserSettings**: Persistent user preferences (haptics, keep screen on, background theme, onboarding status)
 
 ### Key Components
 
 - **GameViewModel**: Central game state management and scoring logic
 - **ScoreDialView**: Custom circular input control with haptic feedback
-- **CircularScoreProgressView**: Animated progress bars for full-screen mode
+- **CircularScoreProgressView**: Animated progress bars with winning animations
+- **ScoringOverlayView**: Floating progress indicator overlay
+- **OnboardingView**: Interactive 4-page tutorial walkthrough
+- **CribbageRulesView**: Comprehensive rules reference
 - **BackgroundStyle**: Configurable background themes with proper contrast
 
 ## Requirements

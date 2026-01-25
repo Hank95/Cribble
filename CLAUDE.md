@@ -27,6 +27,7 @@ xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
 ### Core Data Model
 - **Game**: Stores completed games with winner/loser names, scores, date, and duration
 - **PlayerStats**: Tracks cumulative player statistics (games played/won/lost, average score)
+- **UserSettings**: Persistent user preferences (haptics, keep screen on, background theme, onboarding status)
 
 ### Key Components
 
@@ -37,22 +38,45 @@ xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
 
 **ScoreDialView** (`Components/ScoreDialView.swift`)
 - Custom circular input control for score selection (1-29 range)
-- Dial shows markings 1-15, but scrolling past 15 continues to 16-29
-- Implements drag gestures with haptic feedback
-- Snaps to integer values
-- Shows "Extended" indicator when score > 15
+- 360-degree rotational interface with drag gestures
+- Separate add/subtract modes (clockwise/counter-clockwise)
+- Haptic feedback on value changes (respects `UserSettings.enableHaptics`)
+- Snaps to nearest integer values with spring animation
 
 **Navigation Structure**
-- `ContentView` → `MainTabView` → tabs for Game and History
-- Game tab shows `MainGameView` with active game
-- History tab shows `HistoryView` with completed games list
-- `FullScreenGameView` accessible via viewfinder button - immersive mode with circular progress bars
+- `ContentView` → `MainGameView` with active game and `ScoringOverlayView`
+- Toolbar provides access to `HistoryView`, `SettingsView`, and `NewGameSetupView`
+- `OnboardingView` shown as full-screen cover on first launch (can be replayed from Settings)
+- `CribbageRulesView` and `DonationView` accessible from Settings
 
 **CircularScoreProgressView** (`Components/CircularScoreProgressView.swift`)
 - Creates rounded rectangle progress bars that loop around screen edges
 - Player 1 (outer track, blue) and Player 2 (inner track, orange)
-- Animated progress from 0 to 121 points
-- Used in full-screen game mode
+- Animated progress from 0 to 121 points with winning animations
+- Used in `ScoringOverlayView` overlay on main game screen
+
+**ScoringOverlayView** (`Components/ScoringOverlayView.swift`)
+- Floating circular progress indicator overlay
+- Shows real-time score progress for both players
+- Positioned in corner of MainGameView
+
+**OnboardingView** (`Views/OnboardingView.swift`)
+- 4-page interactive tutorial with animated transitions
+- Includes interactive score dial demo
+- Tracks completion via `UserSettings.hasSeenOnboarding`
+
+**CribbageRulesView** (`Views/CribbageRulesView.swift`)
+- Comprehensive cribbage rules reference
+- Covers gameplay, scoring, and variations
+- Accessible from Settings Help section
+
+**SettingsView** (`Views/SettingsView.swift`)
+- Game options: Haptic feedback toggle
+- Display: Keep screen on toggle
+- Background theme selector (6 themes)
+- Help section: Rules and App Tour
+- Support section: Donation links
+- Reset all settings functionality
 
 ### Data Flow
 1. User interacts with ScoreDialView to select points
@@ -62,7 +86,8 @@ xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
 
 ## Development Requirements
 
-- iOS Deployment Target: 18.5
+- iOS Deployment Target: 17.0
 - Swift Version: 5.0
+- Xcode 15.0+
 - No external dependencies - uses only SwiftUI and Core Data
 - Supports iPhone and iPad (Universal app)
