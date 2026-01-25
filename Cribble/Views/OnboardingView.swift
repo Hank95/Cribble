@@ -122,9 +122,9 @@ struct OnboardingView: View {
                 // Use adaptive grid for feature highlights
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: isCompact ? 140 : 160))], spacing: isCompact ? 8 : 16) {
                     FeatureHighlight(icon: "gamecontroller.fill", text: "Easy Scoring", color: .blue, isCompact: isCompact)
-                    FeatureHighlight(icon: "clock.fill", text: "Game History", color: .purple, isCompact: isCompact)
-                    FeatureHighlight(icon: "gearshape.fill", text: "Customizable", color: .orange, isCompact: isCompact)
-                    FeatureHighlight(icon: "heart.fill", text: "Beautiful UI", color: .red, isCompact: isCompact)
+                    FeatureHighlight(icon: "list.number", text: "League Table", color: .purple, isCompact: isCompact)
+                    FeatureHighlight(icon: "person.2.fill", text: "Head to Head", color: .teal, isCompact: isCompact)
+                    FeatureHighlight(icon: "bolt.fill", text: "Skunk Tracking", color: .orange, isCompact: isCompact)
                 }
                 .opacity(animateElements ? 1.0 : 0.0)
                 .offset(y: animateElements ? 0 : 30)
@@ -219,10 +219,10 @@ struct OnboardingView: View {
     
     private func featuresPage(isCompact: Bool) -> some View {
         let titleFont: Font = isCompact ? .title2 : .largeTitle
-        let spacing: CGFloat = isCompact ? 16 : 24
+        let spacing: CGFloat = isCompact ? 12 : 20
 
         return ScrollView(showsIndicators: false) {
-            VStack(spacing: isCompact ? 20 : 40) {
+            VStack(spacing: isCompact ? 16 : 32) {
                 Spacer(minLength: isCompact ? 10 : 20)
 
                 VStack(spacing: isCompact ? 10 : 20) {
@@ -239,34 +239,42 @@ struct OnboardingView: View {
 
                 VStack(spacing: spacing) {
                     FeatureRow(
-                        icon: "paintbrush.fill",
+                        icon: "list.number",
                         iconColor: .purple,
-                        title: "Beautiful Themes",
-                        description: "Choose from felt green, midnight blue, warm gradients and more",
+                        title: "League Table",
+                        description: "Track rankings with wins, losses, and match points",
                         isCompact: isCompact
                     )
 
                     FeatureRow(
-                        icon: "square.stack.3d.up.fill",
+                        icon: "person.2.fill",
+                        iconColor: .teal,
+                        title: "Head to Head",
+                        description: "Compare your record against any opponent",
+                        isCompact: isCompact
+                    )
+
+                    FeatureRow(
+                        icon: "bolt.fill",
+                        iconColor: .orange,
+                        title: "Skunk Tracking",
+                        description: "Earn bonus match points for skunks and double skunks",
+                        isCompact: isCompact
+                    )
+
+                    FeatureRow(
+                        icon: "clock.fill",
                         iconColor: .blue,
                         title: "Game History",
-                        description: "Track all your games with detailed statistics and scores",
+                        description: "View all past games and manage players",
                         isCompact: isCompact
                     )
 
                     FeatureRow(
-                        icon: "slider.horizontal.3",
-                        iconColor: .green,
-                        title: "Customizable Settings",
-                        description: "Haptics, sounds, auto-save, and screen preferences",
-                        isCompact: isCompact
-                    )
-
-                    FeatureRow(
-                        icon: "book.fill",
-                        iconColor: .orange,
-                        title: "Built-in Rules",
-                        description: "Complete cribbage rules reference right in the app",
+                        icon: "paintbrush.fill",
+                        iconColor: .pink,
+                        title: "Beautiful Themes",
+                        description: "Customize with felt green, midnight blue, and more",
                         isCompact: isCompact
                     )
                 }
@@ -319,8 +327,8 @@ struct OnboardingView: View {
                     VStack(alignment: .leading, spacing: isCompact ? 4 : 8) {
                         TipRow(text: "Tap \"New Game\" to set up your first match", isCompact: isCompact)
                         TipRow(text: "Use the score dials to add points quickly", isCompact: isCompact)
-                        TipRow(text: "Check Settings for themes and preferences", isCompact: isCompact)
-                        TipRow(text: "View Rules anytime for complete instructions", isCompact: isCompact)
+                        TipRow(text: "Check History for league standings and head-to-head stats", isCompact: isCompact)
+                        TipRow(text: "Win by skunk (<91 pts) or double skunk (<61 pts) for bonus points!", isCompact: isCompact)
                     }
                 }
 

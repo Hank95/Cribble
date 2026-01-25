@@ -48,6 +48,23 @@ struct SettingsView: View {
                     .padding(.vertical, 8)
                 }
                 
+                Section(header: Text("Statistics"), footer: Text("Access league standings, head-to-head records, and player management from the History screen.")) {
+                    HStack {
+                        Image(systemName: "chart.bar.fill")
+                            .foregroundColor(.purple)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("League & Stats")
+                                .foregroundColor(.primary)
+                            Text("Found in Game History")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "clock.fill")
+                            .foregroundColor(.secondary)
+                    }
+                }
+
                 Section(header: Text("Help")) {
                     Button(action: {
                         showingRulesView = true
@@ -63,7 +80,7 @@ struct SettingsView: View {
                                 .font(.caption)
                         }
                     }
-                    
+
                     Button(action: {
                         showingOnboardingView = true
                     }) {
