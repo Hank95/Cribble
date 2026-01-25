@@ -2,6 +2,8 @@
 
 A modern iOS app for keeping score in cribbage games, built with SwiftUI and Core Data.
 
+**Current Version: 1.1**
+
 ## Features
 
 - **Custom Score Dial Interface**: Intuitive circular dial for selecting points (1-29 range)
@@ -10,7 +12,7 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 - **Player Statistics**: Track wins, losses, and average scores
 - **Customizable Backgrounds**: Choose from 6 visual background themes
 - **Settings Persistence**: All user preferences are saved using Core Data
-- **Responsive Design**: Supports both portrait and landscape orientations
+- **Fully Responsive Design**: Adapts to all screen sizes from iPhone SE to iPad Pro, portrait and landscape
 - **Circular Score Progress**: Animated progress bars showing game advancement
 - **Interactive Onboarding**: 4-page tutorial with live score dial demo
 - **Cribbage Rules Reference**: Comprehensive in-app rules documentation
@@ -59,12 +61,13 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 ### Key Components
 
 - **GameViewModel**: Central game state management and scoring logic
-- **ScoreDialView**: Custom circular input control with haptic feedback
+- **ScoreDialView**: Custom circular input control with haptic feedback and responsive sizing via GeometryReader
 - **CircularScoreProgressView**: Animated progress bars with winning animations
 - **ScoringOverlayView**: Floating progress indicator overlay
-- **OnboardingView**: Interactive 4-page tutorial walkthrough
+- **OnboardingView**: Interactive 4-page tutorial walkthrough with adaptive layouts
 - **CribbageRulesView**: Comprehensive rules reference
 - **BackgroundStyle**: Configurable background themes with proper contrast
+- **MainGameView**: Responsive layouts for portrait/landscape with device-specific sizing
 
 ## Requirements
 
@@ -82,13 +85,13 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 
 ```bash
 # Build for iOS Simulator
-xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' build
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.2' build
 
 # Build for device
 xcodebuild -project Cribble.xcodeproj -scheme Cribble -configuration Release build
 
 # Run tests
-xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' test
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.2' test
 
 # Clean build
 xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
@@ -111,6 +114,24 @@ The app follows iOS best practices:
 - Supports both iPhone and iPad (Universal app)
 - Transparent navigation and tab bars for seamless background themes
 - Haptic feedback for enhanced user experience
+- Responsive layouts using `GeometryReader` and device detection
+- iOS 26 compatible APIs (`NavigationStack`, modern `onChange` syntax)
+
+## Version History
+
+### 1.1 (Current)
+- **Responsive Layouts**: Full support for all screen sizes from iPhone SE to iPad Pro
+- **Improved ScoreDialView**: Now uses GeometryReader for proper frame sizing on all devices
+- **Landscape Mode Fixes**: Proper spacing for player names, dials, and buttons in landscape orientation
+- **iOS 26 Compatibility**: Updated to use modern SwiftUI APIs (NavigationStack, new onChange syntax)
+- **Dynamic Version Display**: Settings now shows version from app bundle automatically
+
+### 1.0
+- Initial release with core cribbage scorekeeping functionality
+- Custom score dial interface
+- Game history and player statistics
+- 6 background themes
+- Interactive onboarding tutorial
 
 ## License
 

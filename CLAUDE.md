@@ -10,16 +10,22 @@ CribScore is a SwiftUI iOS app for cribbage scorekeeping. It tracks games betwee
 
 ```bash
 # Build for iOS Simulator
-xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' build
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.2' build
 
 # Build for device
 xcodebuild -project Cribble.xcodeproj -scheme Cribble -configuration Release build
 
 # Run tests
-xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' test
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.2' test
 
 # Clean build
 xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
+
+# Archive for App Store
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -configuration Release -destination 'generic/platform=iOS' -archivePath build/Cribble.xcarchive archive
+
+# Export and upload to App Store Connect
+xcodebuild -exportArchive -archivePath build/Cribble.xcarchive -exportPath build/export -exportOptionsPlist build/ExportOptions.plist
 ```
 
 ## Architecture
@@ -42,6 +48,8 @@ xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
 - Separate add/subtract modes (clockwise/counter-clockwise)
 - Haptic feedback on value changes (respects `UserSettings.enableHaptics`)
 - Snaps to nearest integer values with spring animation
+- Uses `GeometryReader` for responsive sizing - adapts to any container frame
+- All elements (pointer, ticks, fonts) scale proportionally
 
 **Navigation Structure**
 - `ContentView` → `MainGameView` with active game and `ScoringOverlayView`
@@ -78,6 +86,21 @@ xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
 - Support section: Donation links
 - Reset all settings functionality
 
+### Responsive Layout System
+
+**MainGameView** uses a comprehensive responsive layout system:
+- `GeometryReader` detects available screen size
+- `isCompact` threshold (`height < 700` for portrait, `height < 400` for landscape)
+- Device-specific sizing: `UIDevice.current.userInterfaceIdiom == .pad`
+- Separate portrait and landscape layouts with orientation detection
+- Dial sizes calculated as percentage of available height with min/max clamping
+- Adaptive spacing, fonts, and padding based on screen constraints
+
+**Small Screen Support** (iPhone SE, iPhone 16e):
+- Reduced dial sizes and tighter spacing
+- ScrollView wrappers to prevent content clipping
+- Adaptive LazyVGrid layouts in NewGameSetupView and OnboardingView
+
 ### Data Flow
 1. User interacts with ScoreDialView to select points
 2. GameViewModel receives score updates and manages game state
@@ -91,3 +114,22 @@ xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
 - Xcode 15.0+
 - No external dependencies - uses only SwiftUI and Core Data
 - Supports iPhone and iPad (Universal app)
+
+## iOS 26 Compatibility
+
+The codebase uses modern SwiftUI APIs compatible with iOS 26:
+- `NavigationStack` (not deprecated `NavigationView`)
+- Two-parameter `onChange(of:) { oldValue, newValue in }` syntax
+- `@Environment(\.dismiss)` (not deprecated `presentationMode`)
+
+## Version History
+
+**1.1** (Current)
+- Responsive layouts for all screen sizes (iPhone SE through iPad Pro)
+- ScoreDialView now uses GeometryReader for proper frame sizing
+- Fixed UI spacing issues in portrait and landscape orientations
+- iOS 26 API compatibility updates
+- Dynamic version display in Settings
+
+**1.0**
+- Initial release
