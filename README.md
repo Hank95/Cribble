@@ -4,6 +4,26 @@ A modern iOS app for keeping score in cribbage games, built with SwiftUI and Cor
 
 **Current Version: 1.2**
 
+### What's New in 1.2
+
+**Faster Scoring**
+- Tap the score dial to quickly add +1 point
+- Drag for larger values (1-29) like before
+
+**League & Statistics**
+- League Table — Track rankings with wins, losses, and match points
+- Head-to-Head — Compare your record against any opponent
+- Player Management — Rename, merge, or delete players
+
+**Skunk Tracking**
+- Earn 2 match points for a skunk (opponent < 91)
+- Earn 3 match points for a double skunk (opponent < 61)
+- Game over screen now shows skunk status and points earned
+
+**Quality of Life**
+- Player autocomplete when starting new games
+- Updated tutorial with new features
+
 ## Features
 
 ### Scoring
