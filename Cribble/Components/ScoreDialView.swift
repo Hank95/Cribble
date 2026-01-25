@@ -7,70 +7,94 @@ struct ScoreDialView: View {
     @State private var lastHapticValue: Int = 0
     @State private var isAddMode: Bool = true // true = add mode, false = subtract mode
     @EnvironmentObject var userSettings: UserSettings
-    
+
     private let maxScore = 29
-    private var dialRadius: CGFloat {
-        UIDevice.current.userInterfaceIdiom == .pad ? 120 : 80
-    }
     private let degreesPerValue: Double = 360.0 / 29.0 // 360 degrees for 29 points
-    
+
+    /// Calculate dial radius based on available size
+    private func dialRadius(for size: CGFloat) -> CGFloat {
+        // The dial needs room for the pointer (which extends beyond the circle)
+        // So the actual circle radius should be smaller than half the container
+        // Pointer is about 10% of the radius, so use 45% of container size
+        return size * 0.45
+    }
+
+    /// Calculate pointer size based on dial radius
+    private func pointerSize(for radius: CGFloat) -> CGFloat {
+        return max(radius * 0.12, 10) // At least 10pt, scales with dial
+    }
+
+    /// Calculate font size based on dial radius
+    private func centerFontSize(for radius: CGFloat) -> CGFloat {
+        return max(radius * 0.45, 18) // Scales with dial, minimum 18pt
+    }
+
     var body: some View {
-        ZStack {
-            // Background circle
-            Circle()
-                .fill(Color.gray.opacity(0.1))
-                .frame(width: dialRadius * 2, height: dialRadius * 2)
-            
-            // Outer ring with color based on selected value
-            Circle()
-                .stroke(ringColor, lineWidth: 4)
-                .frame(width: dialRadius * 2, height: dialRadius * 2)
-            
-            // Tick marks around the dial (0 to 29)
-            ForEach(0...maxScore, id: \.self) { value in
-                let angle = Double(value) * degreesPerValue
-                
-                Rectangle()
-                    .fill(tickColor(for: value))
-                    .frame(width: 2, height: tickHeight(for: value))
-                    .offset(y: -dialRadius + tickHeight(for: value) / 2)
-                    .rotationEffect(.degrees(angle))
+        GeometryReader { geometry in
+            let size = min(geometry.size.width, geometry.size.height)
+            let radius = dialRadius(for: size)
+            let pointerDiameter = pointerSize(for: radius)
+            let fontSize = centerFontSize(for: radius)
+
+            ZStack {
+                // Background circle
+                Circle()
+                    .fill(Color.gray.opacity(0.1))
+                    .frame(width: radius * 2, height: radius * 2)
+
+                // Outer ring with color based on selected value
+                Circle()
+                    .stroke(ringColor, lineWidth: max(radius * 0.025, 2))
+                    .frame(width: radius * 2, height: radius * 2)
+
+                // Tick marks around the dial (0 to 29)
+                ForEach(0...maxScore, id: \.self) { value in
+                    let angle = Double(value) * degreesPerValue
+
+                    Rectangle()
+                        .fill(tickColor(for: value))
+                        .frame(width: max(radius * 0.015, 1.5), height: tickHeight(for: value, radius: radius))
+                        .offset(y: -radius + tickHeight(for: value, radius: radius) / 2)
+                        .rotationEffect(.degrees(angle))
+                }
+
+                // Center content
+                VStack(spacing: 2) {
+                    Text(displayText)
+                        .font(.system(size: fontSize, weight: .bold, design: .rounded))
+                        .foregroundColor(textColor)
+                        .contentTransition(.numericText())
+
+                    Text(actionText)
+                        .font(.system(size: max(fontSize * 0.35, 10)))
+                        .fontWeight(.medium)
+                        .foregroundColor(textColor.opacity(0.7))
+                }
+
+                // Pointer indicator
+                Circle()
+                    .fill(pointerColor)
+                    .frame(width: pointerDiameter, height: pointerDiameter)
+                    .offset(y: -radius - pointerDiameter / 2)
+                    .rotationEffect(.degrees(rotationAngle))
+
+                // Invisible interaction area
+                Circle()
+                    .fill(Color.clear)
+                    .frame(width: size, height: size)
+                    .contentShape(Circle())
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                handleDragChanged(value, radius: radius)
+                            }
+                            .onEnded { _ in
+                                handleDragEnded()
+                            }
+                    )
             }
-            
-            // Center content
-            VStack(spacing: 4) {
-                Text(displayText)
-                    .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 48 : 36, weight: .bold, design: .rounded))
-                    .foregroundColor(textColor)
-                    .contentTransition(.numericText())
-                
-                Text(actionText)
-                    .font(UIDevice.current.userInterfaceIdiom == .pad ? .subheadline : .caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(textColor.opacity(0.7))
-            }
-            
-            // Pointer indicator
-            Circle()
-                .fill(pointerColor)
-                .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? 20 : 16, height: UIDevice.current.userInterfaceIdiom == .pad ? 20 : 16)
-                .offset(y: -dialRadius - (UIDevice.current.userInterfaceIdiom == .pad ? 10 : 8))
-                .rotationEffect(.degrees(rotationAngle))
-            
-            // Invisible interaction area
-            Circle()
-                .fill(Color.clear)
-                .frame(width: dialRadius * 2.5, height: dialRadius * 2.5)
-                .contentShape(Circle())
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            handleDragChanged(value)
-                        }
-                        .onEnded { _ in
-                            handleDragEnded()
-                        }
-                )
+            .frame(width: size, height: size)
+            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
         }
         .onAppear {
             updateRotationForScore()
@@ -150,24 +174,25 @@ struct ScoreDialView: View {
         }
     }
     
-    private func tickHeight(for value: Int) -> CGFloat {
+    private func tickHeight(for value: Int, radius: CGFloat) -> CGFloat {
+        let baseHeight = radius * 0.1
         if value == 0 {
-            return 16 // Longer tick for zero
+            return baseHeight * 2 // Longer tick for zero
         } else if value % 5 == 0 {
-            return 12 // Medium tick for multiples of 5
+            return baseHeight * 1.5 // Medium tick for multiples of 5
         } else {
-            return 8 // Short tick for other values
+            return baseHeight // Short tick for other values
         }
     }
     
-    private func handleDragChanged(_ value: DragGesture.Value) {
+    private func handleDragChanged(_ value: DragGesture.Value, radius: CGFloat) {
         if !isDragging {
             isDragging = true
             lastHapticValue = selectedScore
         }
-        
+
         // Calculate angle from center to touch point
-        let center = CGPoint(x: dialRadius, y: dialRadius)
+        let center = CGPoint(x: radius, y: radius)
         let touchPoint = CGPoint(x: value.location.x, y: value.location.y)
         
         let deltaX = touchPoint.x - center.x

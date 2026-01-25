@@ -27,10 +27,12 @@ struct MainGameView: View {
 
         // For iPhones, calculate based on available height
         let availableHeight = geometry.size.height
-        let isCompactHeight = availableHeight < 700 // iPhone SE, mini, landscape
 
         if isLandscape {
-            return isCompactHeight ? 100 : 140
+            // iPhone landscape is very height-constrained
+            // Calculate dial as percentage of height, with room for name above and button below
+            let calculatedSize = availableHeight * 0.50
+            return min(max(calculatedSize, 80), 140) // Between 80-140pt for iPhone landscape
         } else {
             // Portrait: dial should be ~22% of available height, clamped
             let calculatedSize = availableHeight * 0.22
@@ -176,7 +178,11 @@ struct MainGameView: View {
         let topPadding = verticalPadding(for: geometry, position: .top)
         let bottomPadding = verticalPadding(for: geometry, position: .bottom)
         let isCompact = geometry.size.height < 700
-        let buttonFont: Font = UIDevice.current.userInterfaceIdiom == .pad ? .title3 : (isCompact ? .caption : .subheadline)
+        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+        // Button should be larger on iPhone - use .body for regular iPhones, .caption only for very compact screens
+        let buttonFont: Font = isIPad ? .title3 : (isCompact ? .subheadline : .body)
+        // Add more space between dial and button on iPhone
+        let dialToButtonSpacing: CGFloat = isIPad ? 20 : (isCompact ? 12 : 20)
 
         return Group {
             if !gameViewModel.gameWon {
@@ -188,7 +194,7 @@ struct MainGameView: View {
                             Text(gameViewModel.player2Name)
                                 .font(isCompact ? .subheadline : .headline)
                                 .foregroundColor(gameViewModel.player2Color)
-                                .padding(.bottom, isCompact ? 2 : 5)
+                                .padding(.bottom, isCompact ? 16 : 24)
 
                             ScoreDialView(selectedScore: $gameViewModel.player2SelectedScore)
                                 .frame(width: dialSizeValue, height: dialSizeValue)
@@ -197,12 +203,14 @@ struct MainGameView: View {
                                 gameViewModel.applyScoreForPlayer2()
                             }
                             .font(buttonFont)
+                            .fontWeight(.medium)
                             .foregroundColor(.white)
-                            .padding(.horizontal, isCompact ? 12 : 20)
-                            .padding(.vertical, isCompact ? 6 : 10)
+                            .padding(.horizontal, isIPad ? 24 : (isCompact ? 16 : 20))
+                            .padding(.vertical, isIPad ? 12 : (isCompact ? 8 : 10))
                             .background(buttonColor(for: gameViewModel.player2SelectedScore, playerColor: gameViewModel.player2Color))
                             .cornerRadius(isCompact ? 8 : 10)
                             .disabled(gameViewModel.player2SelectedScore == 0)
+                            .padding(.top, dialToButtonSpacing)
                         }
                         .padding(.top, topPadding)
                         .padding(.horizontal, isCompact ? 12 : 20)
@@ -221,7 +229,7 @@ struct MainGameView: View {
                             Text(gameViewModel.player1Name)
                                 .font(isCompact ? .subheadline : .headline)
                                 .foregroundColor(gameViewModel.player1Color)
-                                .padding(.bottom, isCompact ? 2 : 5)
+                                .padding(.bottom, isCompact ? 16 : 24)
 
                             ScoreDialView(selectedScore: $gameViewModel.player1SelectedScore)
                                 .frame(width: dialSizeValue, height: dialSizeValue)
@@ -230,12 +238,14 @@ struct MainGameView: View {
                                 gameViewModel.applyScoreForPlayer1()
                             }
                             .font(buttonFont)
+                            .fontWeight(.medium)
                             .foregroundColor(.white)
-                            .padding(.horizontal, isCompact ? 12 : 20)
-                            .padding(.vertical, isCompact ? 6 : 10)
+                            .padding(.horizontal, isIPad ? 24 : (isCompact ? 16 : 20))
+                            .padding(.vertical, isIPad ? 12 : (isCompact ? 8 : 10))
                             .background(buttonColor(for: gameViewModel.player1SelectedScore, playerColor: gameViewModel.player1Color))
                             .cornerRadius(isCompact ? 8 : 10)
                             .disabled(gameViewModel.player1SelectedScore == 0)
+                            .padding(.top, dialToButtonSpacing)
                         }
                         .padding(.bottom, bottomPadding)
                         .padding(.horizontal, isCompact ? 12 : 20)
@@ -256,17 +266,22 @@ struct MainGameView: View {
     private func landscapeLayout(geometry: GeometryProxy) -> some View {
         let dialSizeValue = dialSize(for: geometry)
         let isCompact = geometry.size.height < 400 // Landscape is height-constrained
+        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
         let hSpacing: CGFloat = isCompact ? 16 : 40
-        let buttonFont: Font = UIDevice.current.userInterfaceIdiom == .pad ? .subheadline : .caption
+        let buttonFont: Font = isIPad ? .subheadline : (isCompact ? .caption : .subheadline)
+        // iPhone landscape needs tighter spacing
+        let vStackSpacing: CGFloat = isIPad ? (isCompact ? 12 : 20) : (isCompact ? 4 : 8)
+        let nameToDialPadding: CGFloat = isIPad ? (isCompact ? 12 : 18) : (isCompact ? 4 : 8)
+        let dialToButtonPadding: CGFloat = isIPad ? 24 : (isCompact ? 4 : 8)
 
         return HStack(spacing: hSpacing) {
             if !gameViewModel.gameWon {
                 // Player 1 dial (left side)
-                VStack(spacing: isCompact ? 8 : 20) {
+                VStack(spacing: vStackSpacing) {
                     Text(gameViewModel.player1Name)
-                        .font(isCompact ? .subheadline : .headline)
+                        .font(isCompact ? .caption : .headline)
                         .foregroundColor(gameViewModel.player1Color)
-                        .padding(.bottom, isCompact ? 2 : 5)
+                        .padding(.bottom, nameToDialPadding)
 
                     ScoreDialView(selectedScore: $gameViewModel.player1SelectedScore)
                         .frame(width: dialSizeValue, height: dialSizeValue)
@@ -275,12 +290,14 @@ struct MainGameView: View {
                         gameViewModel.applyScoreForPlayer1()
                     }
                     .font(buttonFont)
+                    .fontWeight(.medium)
                     .foregroundColor(.white)
-                    .padding(.horizontal, isCompact ? 10 : 16)
-                    .padding(.vertical, isCompact ? 6 : 8)
+                    .padding(.horizontal, isIPad ? 20 : (isCompact ? 10 : 14))
+                    .padding(.vertical, isIPad ? 10 : (isCompact ? 4 : 6))
                     .background(buttonColor(for: gameViewModel.player1SelectedScore, playerColor: gameViewModel.player1Color))
                     .cornerRadius(8)
                     .disabled(gameViewModel.player1SelectedScore == 0)
+                    .padding(.top, dialToButtonPadding)
                 }
 
                 // Scores in the center
@@ -295,11 +312,11 @@ struct MainGameView: View {
                 }
 
                 // Player 2 dial (right side)
-                VStack(spacing: isCompact ? 8 : 20) {
+                VStack(spacing: vStackSpacing) {
                     Text(gameViewModel.player2Name)
-                        .font(isCompact ? .subheadline : .headline)
+                        .font(isCompact ? .caption : .headline)
                         .foregroundColor(gameViewModel.player2Color)
-                        .padding(.bottom, isCompact ? 2 : 5)
+                        .padding(.bottom, nameToDialPadding)
 
                     ScoreDialView(selectedScore: $gameViewModel.player2SelectedScore)
                         .frame(width: dialSizeValue, height: dialSizeValue)
@@ -308,12 +325,14 @@ struct MainGameView: View {
                         gameViewModel.applyScoreForPlayer2()
                     }
                     .font(buttonFont)
+                    .fontWeight(.medium)
                     .foregroundColor(.white)
-                    .padding(.horizontal, isCompact ? 10 : 16)
-                    .padding(.vertical, isCompact ? 6 : 8)
+                    .padding(.horizontal, isIPad ? 20 : (isCompact ? 10 : 14))
+                    .padding(.vertical, isIPad ? 10 : (isCompact ? 4 : 6))
                     .background(buttonColor(for: gameViewModel.player2SelectedScore, playerColor: gameViewModel.player2Color))
                     .cornerRadius(8)
                     .disabled(gameViewModel.player2SelectedScore == 0)
+                    .padding(.top, dialToButtonPadding)
                 }
             } else {
                 VStack {
