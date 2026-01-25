@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ApplicationProperties</key>
+	<dict>
+		<key>ApplicationPath</key>
+		<string>Applications/Cribble.app</string>
+		<key>Architectures</key>
+		<array>
+			<string>arm64</string>
+		</array>
+		<key>CFBundleIdentifier</key>
+		<string>com.henrypendleton.Cribble</string>
+		<key>CFBundleShortVersionString</key>
+		<string>1.1</string>
+		<key>CFBundleVersion</key>
+		<string>2</string>
+		<key>SigningIdentity</key>
+		<string>Apple Development: Henry Hunter Pendleton (X798G9F7C4)</string>
+		<key>Team</key>
+		<string>ZUPQ4UVRXU</string>
+	</dict>
+	<key>ArchiveVersion</key>
+	<integer>2</integer>
+	<key>CreationDate</key>
+	<date>2026-01-25T16:22:48Z</date>
+	<key>Distributions</key>
+	<array>
+		<dict>
+			<key>adamId</key>
+			<string>6747778251</string>
+			<key>certificateSHA1</key>
+			<string>120957156A13FAC9D9C5A5413EBDB1F34D86EBB1</string>
+			<key>destination</key>
+			<string>upload</string>
+			<key>identifier</key>
+			<string>068b407f-7be1-430b-a3ab-e088cdd481af</string>
+			<key>preparationEvent</key>
+			<dict>
+				<key>date</key>
+				<string>2026-01-25T16:23:23Z</string>
+				<key>errors</key>
+				<array/>
+				<key>infoMessages</key>
+				<array/>
+				<key>shortTitle</key>
+				<string>Prepared</string>
+				<key>state</key>
+				<string>success</string>
+				<key>title</key>
+				<string>Prepared archive for uploading</string>
+				<key>warnings</key>
+				<array/>
+			</dict>
+			<key>providerId</key>
+			<string>cc6a869c-1f0c-45d1-b7f0-3de429fb8fb6</string>
+			<key>task</key>
+			<string>distribute</string>
+			<key>teamID</key>
+			<string>ZUPQ4UVRXU</string>
+			<key>uploadDestination</key>
+			<string>App Store</string>
+			<key>uploadEvent</key>
+			<dict>
+				<key>date</key>
+				<string>2026-01-25T16:23:59Z</string>
+				<key>errors</key>
+				<array/>
+				<key>infoMessages</key>
+				<array/>
+				<key>shortTitle</key>
+				<string>Uploaded</string>
+				<key>state</key>
+				<string>success</string>
+				<key>title</key>
+				<string>Uploaded to Apple</string>
+				<key>warnings</key>
+				<array/>
+			</dict>
+			<key>uploadedBuildNumber</key>
+			<string>2</string>
+		</dict>
+	</array>
+	<key>Name</key>
+	<string>Cribble</string>
+	<key>SchemeName</key>
+	<string>Cribble</string>
+</dict>
+</plist>
