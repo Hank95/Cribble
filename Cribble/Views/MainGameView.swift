@@ -145,13 +145,13 @@ struct MainGameView: View {
                 showingWinAlert = true
             }
         }
-        .alert("Game Over!", isPresented: $showingWinAlert) {
+        .alert(winAlertTitle, isPresented: $showingWinAlert) {
             Button("New Game") {
                 showingNewGameSetup = true
             }
             Button("OK") { }
         } message: {
-            Text("\(gameViewModel.winner) wins with \(gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player1Score : gameViewModel.player2Score) points!")
+            Text(winAlertMessage)
         }
         .alert("Start New Game?", isPresented: $showingNewGameConfirmation) {
             Button("Cancel", role: .cancel) { }
@@ -394,19 +394,75 @@ struct MainGameView: View {
     }
     
     private var gameWonView: some View {
-        VStack(spacing: 20) {
-            Text("🎉")
-                .font(.system(size: 80))
-            
+        let winnerScore = gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player1Score : gameViewModel.player2Score
+        let loserScore = gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player2Score : gameViewModel.player1Score
+        let winnerColor = gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player1Color : gameViewModel.player2Color
+        let loserName = gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player2Name : gameViewModel.player1Name
+
+        // Compute skunk status
+        let isDoubleSkunk = loserScore < 61
+        let isSkunk = loserScore < 91 && loserScore >= 61
+        let matchPoints = isDoubleSkunk ? 3 : (isSkunk ? 2 : 1)
+
+        return VStack(spacing: 16) {
+            // Victory emoji - different for skunks
+            Text(isDoubleSkunk ? "💀💀" : (isSkunk ? "🦨" : "🎉"))
+                .font(.system(size: 60))
+
             Text("\(gameViewModel.winner) Wins!")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundColor(.blue)
-            
-            Text("Final Score: \(gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player1Score : gameViewModel.player2Score) - \(gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player2Score : gameViewModel.player1Score)")
+                .foregroundColor(winnerColor)
+
+            Text("Final Score: \(winnerScore) - \(loserScore)")
                 .font(.title2)
                 .foregroundColor(.secondary)
-            
+
+            // Skunk indicator
+            if isDoubleSkunk {
+                HStack(spacing: 8) {
+                    Image(systemName: "bolt.fill")
+                        .foregroundColor(.red)
+                    Text("Double Skunk!")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                    Image(systemName: "bolt.fill")
+                        .foregroundColor(.red)
+                }
+                .font(.title3)
+
+                Text("\(loserName) didn't reach 61 points")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            } else if isSkunk {
+                HStack(spacing: 8) {
+                    Image(systemName: "bolt")
+                        .foregroundColor(.orange)
+                    Text("Skunk!")
+                        .fontWeight(.bold)
+                        .foregroundColor(.orange)
+                    Image(systemName: "bolt")
+                        .foregroundColor(.orange)
+                }
+                .font(.title3)
+
+                Text("\(loserName) didn't reach 91 points")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+
+            // Match points earned
+            HStack(spacing: 4) {
+                Text("\(matchPoints)")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundColor(winnerColor)
+                Text(matchPoints == 1 ? "match point" : "match points")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.top, 8)
+
             Button("Start New Game") {
                 showingNewGameSetup = true
             }
@@ -415,13 +471,46 @@ struct MainGameView: View {
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.blue)
+            .background(winnerColor)
             .cornerRadius(12)
+            .padding(.top, 8)
         }
     }
     
+    // MARK: - Win Alert Helpers
+
+    private var winAlertTitle: String {
+        let loserScore = gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player2Score : gameViewModel.player1Score
+        if loserScore < 61 {
+            return "Double Skunk!"
+        } else if loserScore < 91 {
+            return "Skunk!"
+        }
+        return "Game Over!"
+    }
+
+    private var winAlertMessage: String {
+        let winnerScore = gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player1Score : gameViewModel.player2Score
+        let loserScore = gameViewModel.winner == gameViewModel.player1Name ? gameViewModel.player2Score : gameViewModel.player1Score
+        let isDoubleSkunk = loserScore < 61
+        let isSkunk = loserScore < 91 && loserScore >= 61
+        let matchPoints = isDoubleSkunk ? 3 : (isSkunk ? 2 : 1)
+
+        var message = "\(gameViewModel.winner) wins \(winnerScore) to \(loserScore)!"
+
+        if isDoubleSkunk {
+            message += "\n\nDouble skunk - \(matchPoints) match points!"
+        } else if isSkunk {
+            message += "\n\nSkunk - \(matchPoints) match points!"
+        } else {
+            message += "\n\n\(matchPoints) match point earned."
+        }
+
+        return message
+    }
+
     // MARK: - Helper Functions
-    
+
     private func handleNewGameTapped() {
         if gameViewModel.isGameInProgress {
             showingNewGameConfirmation = true

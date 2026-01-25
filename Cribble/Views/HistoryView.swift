@@ -3,27 +3,85 @@ import CoreData
 
 struct HistoryView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    
+
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Game.date, ascending: false)],
         animation: .default)
     private var games: FetchedResults<Game>
-    
+
+    @State private var showingLeagueTable = false
+    @State private var showingHeadToHead = false
+    @State private var showingPlayerManagement = false
+
     var body: some View {
         NavigationStack {
             List {
-                if games.isEmpty {
-                    Text("No games played yet")
-                        .foregroundColor(.secondary)
-                        .italic()
-                        .listRowBackground(Color.clear)
-                } else {
-                    ForEach(games) { game in
-                        GameRowView(game: game)
-                            .listRowBackground(Color.black.opacity(0.1))
+                // Statistics Section
+                Section {
+                    Button {
+                        showingLeagueTable = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "list.number")
+                                .foregroundColor(.purple)
+                                .frame(width: 24)
+                            Text("League Table")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    .onDelete(perform: deleteGames)
+
+                    Button {
+                        showingHeadToHead = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "person.2.fill")
+                                .foregroundColor(.teal)
+                                .frame(width: 24)
+                            Text("Head to Head")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    Button {
+                        showingPlayerManagement = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "person.crop.circle.badge.checkmark")
+                                .foregroundColor(.orange)
+                                .frame(width: 24)
+                            Text("Manage Players")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
+                .listRowBackground(Color.black.opacity(0.1))
+
+                // Games Section
+                Section(header: Text("Recent Games")) {
+                    if games.isEmpty {
+                        Text("No games played yet")
+                            .foregroundColor(.secondary)
+                            .italic()
+                    } else {
+                        ForEach(games) { game in
+                            GameRowView(game: game)
+                        }
+                        .onDelete(perform: deleteGames)
+                    }
+                }
+                .listRowBackground(Color.black.opacity(0.1))
             }
             .scrollContentBackground(.hidden)
             .background(Color.clear)
@@ -33,6 +91,15 @@ struct HistoryView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
+            }
+            .sheet(isPresented: $showingLeagueTable) {
+                LeagueTableView()
+            }
+            .sheet(isPresented: $showingHeadToHead) {
+                HeadToHeadView()
+            }
+            .sheet(isPresented: $showingPlayerManagement) {
+                PlayerManagementView()
             }
         }
     }

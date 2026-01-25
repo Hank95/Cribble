@@ -13,7 +13,11 @@ class GameViewModel: ObservableObject {
     @Published var gameStartTime: Date?
     @Published var gameWon: Bool = false
     @Published var winner: String = ""
-    
+
+    // Player entity references for linking games
+    var player1: Player?
+    var player2: Player?
+
     private let persistenceController = PersistenceController.shared
     private let winningScore = 121
     
@@ -30,8 +34,22 @@ class GameViewModel: ObservableObject {
         gameWon = false
         winner = ""
     }
-    
+
+    /// Start a new game with Player entities (preferred method)
+    func startNewGame(player1: Player, player2: Player, player1Color: Color, player2Color: Color) {
+        self.player1 = player1
+        self.player2 = player2
+        self.player1Name = player1.name ?? "Player 1"
+        self.player2Name = player2.name ?? "Player 2"
+        self.player1Color = player1Color
+        self.player2Color = player2Color
+        startNewGame()
+    }
+
+    /// Legacy method for backward compatibility (creates players automatically)
     func startNewGame(player1Name: String, player2Name: String, player1Color: Color, player2Color: Color) {
+        self.player1 = nil
+        self.player2 = nil
         self.player1Name = player1Name
         self.player2Name = player2Name
         self.player1Color = player1Color
@@ -72,15 +90,21 @@ class GameViewModel: ObservableObject {
     private func endGame(winner: String, loser: String, winnerScore: Int, loserScore: Int) {
         gameWon = true
         self.winner = winner
-        
+
         let duration = gameStartTime?.timeIntervalSinceNow.magnitude ?? 0
-        
+
+        // Determine winner/loser Player references
+        let winnerPlayer = (winner == player1Name) ? player1 : player2
+        let loserPlayer = (winner == player1Name) ? player2 : player1
+
         persistenceController.saveGame(
             winner: winner,
             loser: loser,
             winnerScore: Int16(winnerScore),
             loserScore: Int16(loserScore),
-            duration: duration
+            duration: duration,
+            winnerPlayer: winnerPlayer,
+            loserPlayer: loserPlayer
         )
     }
     

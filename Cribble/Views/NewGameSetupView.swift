@@ -2,12 +2,15 @@ import SwiftUI
 
 struct NewGameSetupView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var gameViewModel: GameViewModel
 
     @State private var player1Name: String
     @State private var player2Name: String
     @State private var player1Color: Color
     @State private var player2Color: Color
+    @State private var selectedPlayer1: Player?
+    @State private var selectedPlayer2: Player?
 
     let availableColors: [Color] = [.blue, .red, .green, .orange, .purple, .pink, .cyan, .mint, .teal, .indigo]
 
@@ -20,13 +23,19 @@ struct NewGameSetupView: View {
         self._player2Name = State(initialValue: gameViewModel.player2Name)
         self._player1Color = State(initialValue: gameViewModel.player1Color)
         self._player2Color = State(initialValue: gameViewModel.player2Color)
+        self._selectedPlayer1 = State(initialValue: nil)
+        self._selectedPlayer2 = State(initialValue: nil)
     }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Player 1") {
-                    TextField("Player 1 Name", text: $player1Name)
+                    PlayerPickerView(
+                        selectedPlayer: $selectedPlayer1,
+                        playerName: $player1Name,
+                        placeholder: "Player 1 Name"
+                    )
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Color")
@@ -47,7 +56,11 @@ struct NewGameSetupView: View {
                 }
 
                 Section("Player 2") {
-                    TextField("Player 2 Name", text: $player2Name)
+                    PlayerPickerView(
+                        selectedPlayer: $selectedPlayer2,
+                        playerName: $player2Name,
+                        placeholder: "Player 2 Name"
+                    )
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Color")
@@ -78,9 +91,24 @@ struct NewGameSetupView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Start Game") {
+                        // Get or create players
+                        let p1 = selectedPlayer1 ?? Player.fetchOrCreate(
+                            name: player1Name.isEmpty ? "Player 1" : player1Name,
+                            in: viewContext
+                        )
+                        let p2 = selectedPlayer2 ?? Player.fetchOrCreate(
+                            name: player2Name.isEmpty ? "Player 2" : player2Name,
+                            in: viewContext
+                        )
+
+                        // Update preferred colors if changed
+                        p1.preferredColor = colorToString(player1Color)
+                        p2.preferredColor = colorToString(player2Color)
+                        try? viewContext.save()
+
                         gameViewModel.startNewGame(
-                            player1Name: player1Name.isEmpty ? "Player 1" : player1Name,
-                            player2Name: player2Name.isEmpty ? "Player 2" : player2Name,
+                            player1: p1,
+                            player2: p2,
                             player1Color: player1Color,
                             player2Color: player2Color
                         )
@@ -89,6 +117,22 @@ struct NewGameSetupView: View {
                     .fontWeight(.semibold)
                 }
             }
+        }
+    }
+
+    private func colorToString(_ color: Color) -> String {
+        switch color {
+        case .blue: return "blue"
+        case .red: return "red"
+        case .green: return "green"
+        case .orange: return "orange"
+        case .purple: return "purple"
+        case .pink: return "pink"
+        case .cyan: return "cyan"
+        case .mint: return "mint"
+        case .teal: return "teal"
+        case .indigo: return "indigo"
+        default: return "blue"
         }
     }
 }
