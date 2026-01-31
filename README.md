@@ -132,8 +132,11 @@ xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS
 # Build for device
 xcodebuild -project Cribble.xcodeproj -scheme Cribble -configuration Release build
 
-# Run tests
+# Run all tests
 xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.2' test
+
+# Run unit tests only (faster, recommended)
+xcodebuild -project Cribble.xcodeproj -scheme Cribble -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.2' test -only-testing:CribbleTests -parallel-testing-enabled NO
 
 # Clean build
 xcodebuild -project Cribble.xcodeproj -scheme Cribble clean
